@@ -1,0 +1,587 @@
+
+2015-08-10 14:49:33
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=376528
+
+2015-08-10 14:49:34
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryGroup?pageNumber=1&pageSize=20&keyWord=6LW16Z2Z&random_num=298357
+
+2015-08-10 14:49:39
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=261395
+
+2015-08-10 14:50:04
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=291364
+
+2015-08-10 14:50:07
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=211984
+
+2015-08-10 14:50:08
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=218220
+
+2015-08-10 14:50:09
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=355137
+
+2015-08-10 14:50:10
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=320302
+
+2015-08-10 14:50:10
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=206263
+
+2015-08-10 14:50:11
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=300701
+
+2015-08-10 14:50:11
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=282753
+
+2015-08-10 14:50:54
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryGroup?pageNumber=1&pageSize=20&keyWord=6LW16Z2Z&random_num=298357
+
+2015-08-10 14:50:58
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryGroup?pageNumber=1&pageSize=20&keyWord=6LW16Z2Z&random_num=298357
+
+2015-08-10 14:51:02
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=267734
+
+2015-08-10 14:51:05
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=358674
+
+2015-08-10 14:51:06
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=227111
+
+2015-08-10 14:51:07
+[WARN]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=400573
+
+2015-08-10 14:51:07
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=396073
+
+2015-08-10 14:51:18
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryGroup?pageNumber=1&pageSize=20&keyWord=6LW16Z2Z&random_num=298357
+
+2015-08-10 14:51:19
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=315168
+
+2015-08-10 14:51:20
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=241855
+
+2015-08-10 14:51:25
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=304445
+
+2015-08-10 14:51:30
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=336015
+
+2015-08-10 14:51:31
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=179360
+
+2015-08-10 14:51:31
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=200726
+
+2015-08-10 14:51:32
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=308250
+
+2015-08-10 14:51:52
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=226829
+
+2015-08-10 14:51:55
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=487016&plat_type=1
+
+2015-08-10 14:51:58
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=812403&plat_type=1
+
+2015-08-10 14:51:59
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=1138955&plat_type=1
+
+2015-08-10 14:52:00
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=1381387&plat_type=1
+
+2015-08-10 14:52:00
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=1833550&plat_type=1
+
+2015-08-10 14:52:00
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=2048263&plat_type=1
+
+2015-08-10 14:52:00
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=2471345&plat_type=1
+
+2015-08-10 14:52:02
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=255656
+
+2015-08-10 14:52:03
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=479958&plat_type=1
+
+2015-08-10 14:52:04
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=842575&plat_type=1
+
+2015-08-10 14:52:06
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=316435
+
+2015-08-10 14:52:07
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=526481&plat_type=1
+
+2015-08-10 14:52:08
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=867102&plat_type=1
+
+2015-08-10 14:52:29
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryGroup?pageNumber=1&pageSize=20&keyWord=6LW16Z2Z&random_num=298357
+
+2015-08-10 14:52:40
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=279714
+
+2015-08-10 14:52:42
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=245963
+
+2015-08-10 14:52:46
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=423047
+
+2015-08-10 14:52:47
+[WARN]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=431919
+
+2015-08-10 14:52:48
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=294911
+
+2015-08-10 14:52:50
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=264538
+
+2015-08-10 14:52:51
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=212455
+
+2015-08-10 14:52:52
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=253636
+
+2015-08-10 14:52:53
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=368457
+
+2015-08-10 14:52:53
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=320119
+
+2015-08-10 14:52:54
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=394690
+
+2015-08-10 14:52:54
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=394767
+
+2015-08-10 14:52:54
+[WARN]-[Thread: http-bio-8080-exec-9]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=298807
+
+2015-08-10 14:52:55
+[WARN]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=312362
+
+2015-08-10 14:52:58
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=456172
+
+2015-08-10 14:52:58
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=312239
+
+2015-08-10 14:53:09
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=227884
+
+2015-08-10 14:53:17
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=253293
+
+2015-08-10 14:53:29
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=380656
+
+2015-08-10 14:53:38
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=339754
+
+2015-08-10 14:53:39
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=262783
+
+2015-08-10 14:53:40
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=202889
+
+2015-08-10 14:53:40
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=194034
+
+2015-08-10 14:53:42
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=313274
+
+2015-08-10 14:53:44
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=250446
+
+2015-08-10 14:53:46
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=374821
+
+2015-08-10 14:53:46
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=425349
+
+2015-08-10 14:53:52
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=173813
+
+2015-08-10 14:53:55
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=260822
+
+2015-08-10 14:53:57
+[WARN]-[Thread: http-bio-8080-exec-11]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=286698
+
+2015-08-10 14:54:01
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=312025
+
+2015-08-10 14:54:02
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=322645
+
+2015-08-10 14:54:02
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=172799
+
+2015-08-10 14:54:08
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=377173
+
+2015-08-10 14:54:15
+[WARN]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=310166
+
+2015-08-10 14:54:20
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=439440
+
+2015-08-10 14:54:23
+[WARN]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=253733
+
+2015-08-10 14:54:31
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=236164
+
+2015-08-10 14:54:39
+[WARN]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=204632
+
+2015-08-10 14:54:52
+[ERROR]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: /uploadres/uploadChunk?v_guid=026ECC59-16CF-0966-FC3C-9BC1F9FC97E5
+java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:61)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	... 21 more
+Caused by: java.io.FileNotFoundException: /usr/local/tomcat7/webapps/dsideal_yy/html/down/temp/026ECC59-16CF-0966-FC3C-9BC1F9FC97E5/0_88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008888881111155555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555551111111111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333344444444444444444444444444444444444444444444444444444444444444444444444444444444444444接口文档.txt (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.<init>(FileInputStream.java:146)
+	at com.dsideal.ypt.Controller.UploadResourceController.uploadChunk(UploadResourceController.java:348)
+	... 26 more
+
+2015-08-10 14:54:53
+[WARN]-[Thread: http-bio-8080-exec-4]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=332596
+
+2015-08-10 14:54:59
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=258981
+
+2015-08-10 14:55:05
+[WARN]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=296756
+
+2015-08-10 14:55:22
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /space/update_baktools/updatets?person_id=30164&identity_id=5
+
+2015-08-10 14:55:27
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=197597
+
+2015-08-10 14:56:08
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=207002
+
+2015-08-10 14:56:08
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=138916
+
+2015-08-10 14:56:43
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/queryMyGroup?pageNumber=1&pageSize=20&random_num=146763
+
+2015-08-10 14:59:35
+[ERROR]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:00:02
+[ERROR]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:00:13
+[WARN]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=598453&plat_type=1
+
+2015-08-10 15:00:43
+[ERROR]-[Thread: http-bio-8080-exec-10]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:00:59
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /ypt/group/checkGroupNum?random_num=734608&plat_type=1
+
+2015-08-10 15:03:30
+[WARN]-[Thread: http-bio-8080-exec-7]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /sfssxw/web/link/link/getTemp?type_id=325
+
+2015-08-10 15:03:32
+[ERROR]-[Thread: http-bio-8080-exec-5]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:03:35
+[ERROR]-[Thread: http-bio-8080-exec-11]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:03:38
+[ERROR]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:03:39
+[WARN]-[Thread: http-bio-8080-exec-3]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /sfssxw/web/link/link/getTemp?type_id=325
+
+2015-08-10 15:06:42
+[ERROR]-[Thread: http-bio-8080-exec-6]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:06:45
+[ERROR]-[Thread: http-bio-8080-exec-1]-[com.jfinal.core.ActionHandler.handle()]: /ypt/res/getQuanPing?name=1RURVU09BMS5wbmc%3D
+java.lang.ArrayIndexOutOfBoundsException: 11
+	at com.dsideal.util.Base64.decode(Base64.java:154)
+	at com.dsideal.util.Base64.decode(Base64.java:224)
+	at com.dsideal.base.Controller.ResourceController.getQuanPing(ResourceController.java:1659)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.jfinal.core.ActionInvocation.invoke(ActionInvocation.java:55)
+	at com.jfinal.core.ActionHandler.handle(ActionHandler.java:73)
+	at com.dsideal.bag.FlexHandler.handle(FlexHandler.java:17)
+	at com.jfinal.ext.handler.UrlSkipHandler.handle(UrlSkipHandler.java:45)
+	at com.jfinal.core.JFinalFilter.doFilter(JFinalFilter.java:72)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:501)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:950)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1070)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:611)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:314)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2015-08-10 15:08:34
+[WARN]-[Thread: http-bio-8080-exec-8]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /management/sfssxw/manage/link/link/getLinkInfoByTemp
+
+2015-08-10 15:09:03
+[DEBUG]-[Thread: http-bio-8080-exec-1]-[com.dsideal.ypt.Model.PaperBase$1.run()]: paperBean.getPaperIdInt()------>11767
+
+2015-08-10 15:09:58
+[WARN]-[Thread: http-bio-8080-exec-2]-[com.jfinal.core.ActionHandler.handle()]: 404 Action Not Found: /sfssxw/web/link/type/getLinkInfoByTemp

@@ -1,0 +1,186 @@
+接口说明
+
+
+1.设置访问量   废除此接口
+=====================================================
+地址：/dsideal_yy/space/attention/access        get方式.
+参数：
+personid           personid
+identityid         身份id
+b_personid 访问空间的personid
+b_identityid 访问空间的身份id.
+type
+返回值：
+成功
+{
+  	"success":true
+}
+
+====================================================
+2.首页获取关注信息.
+地址:/dsideal_yy/space/attention/get            get方式
+参数：
+personid           personid
+identityid         身份id
+b_personid         被关注人的id
+b_identityid       被关注人的身份id.
+type
+
+返回值:
+{
+    attention_count:关注个数.
+    attentionb_count：被关注个数.
+    is_attention:是否被关注.
+    access_quantity: 访问量.
+}
+========================================================
+ 3.获取关注列表.
+ 地址:/dsideal_yy/space/attention/query
+ 参数:
+ personid           personid
+ identityid         身份id
+ b_personid         被关注人的id
+ b_identityid       被关注人的身份id.
+ page_size
+ page_num
+ 返回值：
+ {
+     success = true,
+     total_row=10,
+     total_page=1,
+     page_size=10,
+     page_num=1,
+     list = [
+         {
+             personid = personid;
+             identityid = 身份id
+             person_name = 姓名;
+             avatar_url = 头像;
+         },{}
+     ]
+ }
+ 失败
+ {
+     success = false
+ }
+========================================================
+4.获取被关注列表.
+地址:/dsideal_yy/space/attention/bquery
+参数:
+personid           personid
+identityid         身份id
+b_personid         被关注人的id
+b_identityid       被关注人的身份id.
+ page_size
+ page_num
+返回值：
+{
+    success = true,
+     total_row=10,
+     total_page=1,
+     page_size=10,
+     page_num=1,
+    list = [
+        {
+            personid = personid;
+            identityid = 身份id
+            person_name = 姓名;
+            avatar_url = 头像;
+        },{}
+    ]
+}
+失败
+{
+    success = false
+}
+
+
+========================================================
+5.保存关注.
+地址:/dsideal_yy/ypt/space/attention/save   post方式.
+参数:
+personid           personid
+identityid         身份id
+b_personid         被关注人的id
+b_identityid       被关注人的身份id.
+返回值：
+{
+    success = true,
+
+}
+失败
+{
+    success = false,
+    info = {name = "",data=""}
+}
+
+========================================================
+6.取消关注.
+地址:/dsideal_yy/ypt/space/attention/cancel   post方式.
+参数:
+personid           personid
+identityid         身份id
+b_personid         被关注人的id
+b_identityid       被关注人的身份id.
+返回值：
+{
+    success = true,
+}
+失败
+{
+    success = false,
+    info = {name = "",data=""}
+}
+
+============================================================
+7.获取访客记录列表
+地址：/dsideal_yy/space/attention/list_access        get方式.
+参数：
+personid           personid
+identityid         身份id
+type
+page_size
+page_num
+返回值：
+成功
+{
+  	"success":true,
+     total_row=10,
+     total_page=1,
+     page_size=10,
+     page_num=1,
+  	list = [
+            {
+                personid = personid;
+                identityid = 身份id
+                person_name = 姓名;
+                avatar_url = 头像;
+            },{}
+        ]
+}
+
+8.获取访问过的记录列表
+地址：/dsideal_yy/space/attention/blist_access        get方式.
+参数：
+personid           personid
+identityid         身份id
+type
+ page_size
+ page_num
+返回值：
+成功
+{
+  	"success":true,
+  	total_row=10,
+     total_page=1,
+     page_size=10,
+     page_num=1,
+  	list = [
+            {
+                personid = personid;
+                identityid = 身份id
+                person_name = 姓名;
+                avatar_url = 头像;
+            },{}
+        ]
+}

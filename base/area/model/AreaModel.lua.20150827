@@ -1,0 +1,537 @@
+--[[
+	胡悦
+	行政区划信息基础接口
+]]
+
+local _AreaModel = {};
+
+--[[
+    描述：根据行政区划名称和行政区划类型查询行政区划
+    作者： 胡悦 2015-08-19
+    参数：    areaName,areaType
+    返回值：存储结果的table
+]]
+local function getAreaList(self,areaName,areaType,parentId)
+
+	local DBUtil = require "common.DBUtil";
+	local query_condition =" where b_use=1 "
+	if areaName == nil or areaName=="" then 
+	
+	else 
+		query_condition=query_condition.." and area_name like '%"..area_name.."%'";
+	end
+	
+	if areaType == nil or areaType=="" then 
+	
+	else
+		query_condition=query_condition.." and area_type in ("..areaType..") "
+	end
+	
+	if parentId == nil or parentId=="" then 
+	
+	else
+		query_condition=query_condition.." and parent_id  = "..parentId;
+	end
+	
+	local query_area_sql = "SELECT    AREA_ID, AREA_NAME, AREA_NAME_JC,PARENT_ID, AREA_TYPE FROM    t_base_area "..query_condition;
+	ngx.log(ngx.ERR,"hy_log-->查询行政区划SQL"..query_area_sql);
+	local query_area_res=DBUtil: querySingleSql(query_area_sql);
+	local resultTable = {};
+	for i=1,#query_area_res do
+		local area_res={};
+		area_res["AREA_ID"]=query_area_res[i]["AREA_ID"];
+		area_res["AREA_NAME"]=query_area_res[i]["AREA_NAME"];
+		area_res["AREA_NAME_JC"]=query_area_res[i]["AREA_NAME_JC"];
+		area_res["PARENT_ID"]=query_area_res[i]["PARENT_ID"];
+		area_res["AREA_TYPE"]=query_area_res[i]["AREA_TYPE"];
+		table.insert(resultTable, area_res);
+	end
+	return resultTable;
+end
+_AreaModel.getAreaList = getAreaList;
+---------------------------------------------------------------------------
+
+--[[
+	增加教育单位
+]]
+local function addEducationBureau(self,area_id,area_name,area_type,parent_area_id)
+	local result={};
+	local DBUtil = require "common.DBUtil";
+	local _SSDBUtil = require "common.SSDBUtil"
+	local cjson = require "cjson"
+	local org_id = _SSDBUtil: incr("t_base_group_new_pk");
+	local bureau_name;
+	if tonumber(area_type)==2 then
+		bureau_name=area_name.."教育厅";
+	else
+		bureau_name=area_name.."教育局";
+	end
+	--1-直辖市;2-省;3-区;4-市;5-县
+	
+	local parent_id,org_code,level;
+	ngx.log(ngx.ERR,area_type.."------------------------------");
+	if tonumber(area_type) == 1 or tonumber(area_type)==2 then
+		parent_id=0;
+		org_code = "_"..org_id.."_";
+		level=0;
+	else
+		local query_parent_sql = "select org_id,org_code,level from t_base_organization where area_id = "..parent_area_id;	
+		ngx.log(ngx.ERR,"查询父节点的SQL----->"..query_parent_sql);
+		local query_parent_res= DBUtil: querySingleSql(query_parent_sql);
+		if not query_parent_res or not query_parent_res[1] then
+			result.success=false;
+			return result;
+		end
+		parent_id = query_parent_res[1]["org_id"];
+		org_code = tostring(query_parent_res[1]["org_code"])..org_id.."_";
+		level = tonumber(query_parent_res[1]["level"])+1;
+	
+	end
+	
+	local insert_bureau_sql="insert into t_base_organization (ORG_ID, ORG_NAME, PARENT_ID,CREATE_TIME, BUREAU_ID, org_code, LEVEL,EDU_TYPE, AREA_ID, ORG_TYPE,B_USE, BUSINESS_SYSTEM_SOURCE) values ("..org_id..",'"..bureau_name.."',"..parent_id..",now(),"..org_id..",'"..org_code.."',"..level..",1,"..area_id..",1,1,'COMMON')";
+	ngx.log(ngx.ERR,"hy_log-->插入教育局的SQL"..insert_bureau_sql);
+	local insert_bureau_res=DBUtil: querySingleSql(insert_bureau_sql);
+	
+	--维护缓存开始
+	local bureau_cache_sql="SELECT ORG_ID AS ID,ORG_NAME AS NAME,PARENT_ID AS PID FROM t_base_organization WHERE BUREAU_ID="..org_id.." ORDER BY SORT_ID DESC";
+	ngx.log(ngx.ERR,"hy_log-->查询组织缓存的SQL"..bureau_cache_sql);
+	local bureau_cache_res = DBUtil:querySingleSql(bureau_cache_sql);
+	local bureau_cache_tab = {}
+	for i=1,#bureau_cache_res do
+	local bureau_table = {}
+	bureau_table["id"] = bureau_cache_res[i]["ID"];
+	bureau_table["pId"] = bureau_cache_res[i]["PID"];
+	bureau_table["name"] = bureau_cache_res[i]["NAME"];
+	bureau_cache_tab[i]=bureau_table;
+	local _CacheUtil = require "common.CacheUtil";
+	local cache = _CacheUtil.getRedisConn();
+	cache:set("bureau_"..org_id,cjson.encode(bureau_cache_tab));
+	cache:hmset("t_base_organization_"..org_id,"org_name",bureau_name,"bureau_id",org_id,"area_id",area_id);
+	_CacheUtil:keepConnAlive(cache)
+end
+	result.success=true;
+	result.org_id=org_id;
+	return result;	
+end
+_AreaModel.addEducationBureau = addEducationBureau;
+---------------------------------------------------------------------------
+--[[
+	增加教育局管理员
+]]
+local function addEducationBureauAdmin(self,area_id,area_name,area_type,org_id)
+		local DBUtil = require "common.DBUtil";
+		--8省管理员
+		--9市管理员
+		--10区县管理员
+		--1-直辖市;2-省;3-区;4-市;5-县
+		local org_name; 
+		local identity_id=3
+		local role_id;
+		if tonumber(area_type)==2 then
+			org_name = area_name.."教育厅管理员";
+		
+			role_id=61;
+		elseif tonumber(area_type)==1 or tonumber(area_type)==4 then
+		
+			role_id=62;
+			org_name = area_name.."教育局管理员";
+		else
+		
+			role_id=63;
+			org_name = area_name.."教育局管理员";
+		end
+	
+		local insert_person_sql="INSERT INTO T_BASE_PERSON( PERSON_NAME, ORG_ID, BUREAU_ID ,AREA_ID,CREATE_TIME, B_USE, IDENTITY_ID )VALUES('"..org_name.."',"..org_id..","..org_id..","..area_id..",now(),1,"..identity_id..");";
+
+		ngx.log(ngx.ERR,"hy_log插入行政区划管理员SQL->"..insert_person_sql);
+
+		local insert_person_res=DBUtil:querySingleSql(insert_person_sql);
+
+		local person_id = insert_person_res.insert_id;
+
+		--增加登录账号
+
+		local login_name;
+
+		--根据身份获取登录名开头字符串
+		local get_login_begin_sql = "SELECT LOGIN_BEGIN FROM T_SYS_IDENTITY WHERE IDENTITY_ID = "..identity_id;
+
+		ngx.log(ngx.ERR,"org_log:get_login_begin_sql->"..get_login_begin_sql);
+
+		local login_name_begin_res = DBUtil:querySingleSql(get_login_begin_sql);
+
+		local login_name_begin="";
+		if login_name_begin_res[1] == nil or login_name_begin_res[1]=="" then 
+
+		else
+			login_name_begin = login_name_begin_res[1]["LOGIN_BEGIN"];
+		end
+
+		ngx.log(ngx.ERR,"org_log:login_name_begin->"..login_name_begin);
+
+		local get_max_login_name_sql = "SELECT MAX(LOGIN_NAME) LOGIN_NAME FROM T_SYS_LOGINPERSON WHERE IDENTITY_ID = "..identity_id.." AND LOGIN_NAME LIKE '"..login_name_begin.."%';";
+
+		ngx.log(ngx.ERR,get_max_login_name_sql);
+
+		local get_max_login_name_res = DBUtil:querySingleSql(get_max_login_name_sql);
+
+		local max_login_name = login_name_begin.."000000";
+		if get_max_login_name_res[1]["LOGIN_NAME"]~=nil and get_max_login_name_res[1]["LOGIN_NAME"]~="" and get_max_login_name_res[1]["LOGIN_NAME"]~= ngx.null then 
+			 max_login_name = get_max_login_name_res[1]["LOGIN_NAME"];
+		end
+
+		local login_name_end = tonumber(string.sub(max_login_name,4,string.len(max_login_name)))+1;
+
+		login_name = login_name_begin..string.format("%06d", login_name_end);
+		
+		local login_password= ngx.md5(123456);
+		local insert_loginperson_sql = "INSERT INTO T_SYS_LOGINPERSON(PERSON_NAME,LOGIN_NAME,LOGIN_PASSWORD,IDENTITY_ID,B_USE,PERSON_ID) VALUES('"..org_name.."','"..login_name.."','"..login_password.."',"..identity_id..",1,"..person_id..")";
+		ngx.log(ngx.ERR,"org_log:insert_loginperson_sql->"..insert_loginperson_sql);
+
+		local insert_loginperson_res = DBUtil:querySingleSql(insert_loginperson_sql);
+		local role_id = "";
+		--增加角色关系
+		local insert_person_role_sql = "INSERT INTO T_SYS_PERSON_ROLE(PERSON_ID,ROLE_ID,IDENTITY_ID,ORG_ID) VALUES("..person_id..","..role_id..","..identity_id..","..org_id..")";
+		ngx.log(ngx.ERR,"org_log:增加角色关系->"..login_name_begin);
+		local insert_person_role_res = DBUtil:querySingleSql(insert_person_role_sql);
+		--维护缓存开始
+		local _CacheUtil = require "common.CacheUtil";
+		local cache = _CacheUtil.getRedisConn();
+		
+		local token = ngx.md5(person_id.."_"..identity_id.."_dsideal4r5t6y7u");
+		cache:hmset("login_"..login_name,"pwd",login_password,"person_id",person_id,"token",token,"identity_id",identity_id,"b_use",1,"person_name",unit_name);
+
+		--角色缓存维护
+		cache:rpush("role_"..person_id.."_"..identity_id,role_id);
+		--人员地区缓存维护
+		cache:hset("person_"..person_id.."_"..identity_id,"token",token);
+		cache:hset("person_"..person_id.."_"..identity_id,"area_id",area_id);
+		cache:hset("person_"..person_id.."_"..identity_id,"xiao",bureau_id);
+		cache:hset("person_"..person_id.."_"..identity_id,"bm",org_id);
+		_CacheUtil:keepConnAlive(cache)
+end
+_AreaModel.addEducationBureauAdmin = addEducationBureauAdmin;
+
+---------------------------------------------------------------------------
+--[[
+	增加行政区划管理员
+]]
+local function addAreaAdmin(self,area_id,area_name,area_type,org_id)
+		local DBUtil = require "common.DBUtil";
+		--8省管理员
+		--9市管理员
+		--10区县管理员
+		--1-直辖市;2-省;3-区;4-市;5-县
+		local org_name = area_name.."管理员";
+		local identity_id;
+		if tonumber(area_type)==2 then
+			identity_id=8;
+			
+		elseif tonumber(area_type)==1 or tonumber(area_type)==4 then
+			identity_id=9;
+			
+		else
+			identity_id=10;
+			
+		end
+		local role_code="AREA_ADMIN";
+		
+		local query_role_sql = "select role_id from t_sys_role where role_code = '"..role_code.."'";
+		
+		local query_role_res=DBUtil:querySingleSql(query_role_sql);
+		
+		local role_id = query_role_res[1]["role_id"];
+		
+	
+		local insert_person_sql="INSERT INTO T_BASE_PERSON( PERSON_NAME, ORG_ID, BUREAU_ID ,AREA_ID,CREATE_TIME, B_USE, IDENTITY_ID )VALUES('"..org_name.."',"..org_id..","..org_id..","..area_id..",now(),1,"..identity_id..");";
+
+		ngx.log(ngx.ERR,"hy_log插入行政区划管理员SQL->"..insert_person_sql);
+
+		local insert_person_res=DBUtil:querySingleSql(insert_person_sql);
+
+		local person_id = insert_person_res.insert_id;
+
+		--增加登录账号
+
+		local login_name;
+
+		--根据身份获取登录名开头字符串
+		local get_login_begin_sql = "SELECT LOGIN_BEGIN FROM T_SYS_IDENTITY WHERE IDENTITY_ID = "..identity_id;
+
+		ngx.log(ngx.ERR,"org_log:get_login_begin_sql->"..get_login_begin_sql);
+
+		local login_name_begin_res = DBUtil:querySingleSql(get_login_begin_sql);
+
+		local login_name_begin="";
+		if login_name_begin_res[1] == nil or login_name_begin_res[1]=="" then 
+
+		else
+			login_name_begin = login_name_begin_res[1]["LOGIN_BEGIN"];
+		end
+
+		ngx.log(ngx.ERR,"org_log:login_name_begin->"..login_name_begin);
+
+		local get_max_login_name_sql = "SELECT MAX(LOGIN_NAME) LOGIN_NAME FROM T_SYS_LOGINPERSON WHERE IDENTITY_ID = "..identity_id.." AND LOGIN_NAME LIKE '"..login_name_begin.."%';";
+
+		ngx.log(ngx.ERR,get_max_login_name_sql);
+
+		local get_max_login_name_res = DBUtil:querySingleSql(get_max_login_name_sql);
+
+		local max_login_name = login_name_begin.."000000";
+		if get_max_login_name_res[1]["LOGIN_NAME"]~=nil and get_max_login_name_res[1]["LOGIN_NAME"]~="" and get_max_login_name_res[1]["LOGIN_NAME"]~= ngx.null then 
+			 ngx.log(ngx.ERR,"--------------"..get_max_login_name_res[1]["LOGIN_NAME"]);
+			 max_login_name = get_max_login_name_res[1]["LOGIN_NAME"];
+		end
+		ngx.log(ngx.ERR,"--------------"..max_login_name);
+		local login_name_end = tonumber(string.sub(max_login_name,3,string.len(max_login_name)))+1;
+
+		login_name = login_name_begin..string.format("%06d", login_name_end);
+		
+		local login_password= ngx.md5(123456);
+		local insert_loginperson_sql = "INSERT INTO T_SYS_LOGINPERSON(PERSON_NAME,LOGIN_NAME,LOGIN_PASSWORD,IDENTITY_ID,B_USE,PERSON_ID) VALUES('"..org_name.."','"..login_name.."','"..login_password.."',"..identity_id..",1,"..person_id..")";
+		ngx.log(ngx.ERR,"org_log:insert_loginperson_sql->"..insert_loginperson_sql);
+
+		local insert_loginperson_res = DBUtil:querySingleSql(insert_loginperson_sql);
+		local role_id = "";
+		--增加角色关系
+		local insert_person_role_sql = "INSERT INTO T_SYS_PERSON_ROLE(PERSON_ID,ROLE_ID,IDENTITY_ID,ORG_ID) VALUES("..person_id..","..role_id..","..identity_id..","..org_id..")";
+		ngx.log(ngx.ERR,"org_log:增加角色关系->"..login_name_begin);
+		local insert_person_role_res = DBUtil:querySingleSql(insert_person_role_sql);
+		--维护缓存开始
+		local _CacheUtil = require "common.CacheUtil";
+		local cache = _CacheUtil.getRedisConn();
+		
+		local token = ngx.md5(person_id.."_"..identity_id.."_dsideal4r5t6y7u");
+		cache:hmset("login_"..login_name,"pwd",login_password,"person_id",person_id,"token",token,"identity_id",identity_id,"b_use",1,"person_name",unit_name);
+
+		--角色缓存维护
+		cache:rpush("role_"..person_id.."_"..identity_id,role_id);
+		--人员地区缓存维护
+		cache:hset("person_"..person_id.."_"..identity_id,"token",token);
+		cache:hset("person_"..person_id.."_"..identity_id,"area_id",area_id);
+		cache:hset("person_"..person_id.."_"..identity_id,"xiao",bureau_id);
+		cache:hset("person_"..person_id.."_"..identity_id,"bm",org_id);
+		_CacheUtil:keepConnAlive(cache)
+		
+end
+_AreaModel.addAreaAdmin = addAreaAdmin;
+---------------------------------------------------------------------------
+
+--[[
+    描述：新增行政区划
+    作者： 胡悦 2015-08-19
+]]
+local function addArea(self,area_id,area_name,area_name_jc,parent_id,area_type,created_by)
+	local result={}
+	local DBUtil = require "common.DBUtil";
+	--1 校验行政区划能否添加
+	local check_id_sql="select count(1) as COUNT from t_base_area where area_id="..area_id;
+	ngx.log(ngx.ERR,"hy_log-->验证行政区划ID是否存在SQL："..check_id_sql);
+	local check_id_res = DBUtil: querySingleSql(check_id_sql);
+	if tonumber(check_id_res[1]["COUNT"]) >0 then  
+		  result.success=false;
+		  result.info=area_id.."已经存在不能重复添加";
+		  return result;
+	end
+	local check_name_sql ="select count(1) as COUNT  from t_base_area where parent_id="..parent_id.." and area_name='"..area_name.."'";
+	ngx.log(ngx.ERR,"hy_log-->验证行政区划名称是否存在SQL："..check_name_sql);
+	local check_name_res = DBUtil: querySingleSql(check_name_sql);
+	if tonumber(check_name_res[1]["COUNT"]) >0 then  
+		  result.success=false;
+		  result.info=area_name.."已经存在不能重复添加";
+		  return result;
+	end
+	--2 插入行政区划
+	local insert_area_sql="INSERT INTO t_base_area ( AREA_ID, AREA_NAME,AREA_NAME_JC, PARENT_ID, AREA_TYPE, B_USE,CREATED_BY, LAST_UPDATED_BY, CREATED_DATE, LAST_UPDATED_DATE )VALUES("..area_id..",'"..area_name.."','"..area_name_jc.."',"..parent_id..","..area_type..",1,"..created_by..","..created_by..",now(),now())";
+	ngx.log(ngx.ERR,"hy_log-->插入行政区划的SQL"..insert_area_sql);
+	local insert_area_res=DBUtil: querySingleSql(insert_area_sql);	
+	--3插入教育局
+	ngx.log(ngx.ERR,area_type.."-----------"..area_name.."----------------");
+	local areaModel = require "base.area.model.AreaModel";
+	local addEducationBureauResult = areaModel:addEducationBureau(area_id,area_name,area_type,pareant_id);
+	local org_id;
+	if addEducationBureauResult.success then 
+		org_id = addEducationBureauResult.org_id;
+		
+	else 
+		result=addEducationBureauResult;
+		return result;
+	
+	end
+	
+	--4插入行政区划管理员
+	local addAreaAdminResult = areaModel:addAreaAdmin(area_id,area_name,area_type,org_id);
+	--5插入教育局管理员
+	local addEducationBureauAdminResult= areaModel:addEducationBureauAdmin(area_id,area_name,area_type,org_id);
+
+	
+	return result;
+end
+_AreaModel.addArea = addArea;
+---------------------------------------------------------------------------
+--[[
+    描述：查询当前行政区划的子节点
+    作者： 姜旭 2015-08-21
+]]
+local function getChildArea(self , area_id)
+	local result={};
+	local DBUtil = require "common.DBUtil";
+	local querySql="select count(1) as COUNT from t_base_area where PARENT_ID="..area_id;
+	ngx.log(ngx.ERR,"查询当前行政区划的子节点数量："..querySql);
+	local check_id_res = DBUtil: querySingleSql(querySql);
+	if tonumber(check_id_res[1]["COUNT"]) ==0 then
+		result.isParent = false
+		result.info=area_id.."是叶子节点";	
+	else
+		
+	end
+	result.success=true;
+end
+_AreaModel.getAllChildArea = getAllChildArea;
+
+--[[
+	根据area_id 获取area信息
+]]
+
+local function getAreaInfoByAreaId(self,area_id)
+	local result={};
+	local DBUtil = require "common.DBUtil";
+	local query_sql="select area_id,area_name,area_name_jc,parent_id,area_type from t_base_area where area_id ="..area_id;
+	ngx.log(ngx.ERR,"查询行政区划SQL："..query_sql);
+	local query_res=DBUtil: querySingleSql(query_sql);
+	if not query_res or not query_res[1] then 
+		result.success="false";
+		result.info="查不到行政区划";
+		return result;
+	end
+	local area_id=query_res[1]["area_id"];
+	local area_name = query_res[1]["area_name"];
+	local area_type = query_res[1]["area_type"];
+	local parent_id = query_res[1]["parent_id"];
+	result.area_id = area_id;
+	result.area_name = area_name;
+	result.area_type=area_type;
+	
+	--1-直辖市;2-省;3-区;4-市;5-县
+	if tonumber(area_type)== 1 then
+		result.province_id = area_id;
+		result.province_name = area_name;
+		result.city_id = area_id;
+		result.city_name = area_name;
+		result.district_id = 0;
+		result.district_name = "";
+	elseif tonumber(area_type) == 2 then 
+		result.province_id = area_id;
+		result.province_name = area_name;
+		result.city_id = 0;
+		result.city_name = "";
+		result.district_id = 0;
+		result.district_name = "";
+	
+	elseif tonumber(area_type) == 4 then 
+		local query_province_sql = "select area_id,area_name from t_base_area where area_type=2 and area_id ="..parent_id;
+		ngx.log(ngx.ERR,"查询省的SQL："..query_province_sql);
+		local query_province_res=DBUtil: querySingleSql(query_province_sql);
+		if not query_province_res or not query_province_res[1] then 
+			result.success="false";
+			result.info="查不到省信息";
+			return result;
+		end
+		result.province_id = query_province_res[1]["area_id"];
+		result.province_name =query_province_res[1]["area_name"];
+		result.city_id = area_id;
+		result.city_name = area_name;
+		result.district_id = 0;
+		result.district_name = "";
+	
+		
+	elseif tonumber(area_type) == 3 or tonumber(area_type) == 5 then 
+		local query_city_sql = "select area_id,area_name,parent_id,area_type from t_base_area where  area_id ="..parent_id;
+		ngx.log(ngx.ERR,"查询市的SQL--->"..query_city_sql);
+		local query_city_res= DBUtil: querySingleSql(query_city_sql);
+		if not query_city_res or not query_city_res[1] then 
+			result.success="false";
+			result.info="查不到市信息";
+			return result;
+		end
+		local city_id = query_city_res[1]["area_id"];
+		local city_name = query_city_res[1]["area_name"];
+		local province_id = query_city_res[1]["parent_id"];
+		local city_area_type=query_city_res[1]["area_type"];
+		result.district_id = area_id;
+		result.district_name = area_name;
+		result.city_id = city_id;
+		result.city_name = city_name;
+		
+		if tonumber(city_area_type) == 1 then 
+			result.province_name = city_name;
+			result.province_id = city_id;
+			return result;
+		end
+		
+		--查询省
+		local query_province_sql = "select area_id,area_name,from t_base_area where area_type=2 and area_id ="..province_id;
+		ngx.log(ngx.ERR,"查询省的SQL："..query_province_sql);
+		local query_province_res=DBUtil: querySingleSql(query_province_sql);
+		if not query_province_res or not query_province_res[1] then 
+			result.success="false";
+			result.info="查不到省信息";
+			return result;
+		end	
+		result.province_name = query_province_res[1]["area_name"];	
+	end	
+	
+	return result;
+end
+
+_AreaModel.getAreaInfoByAreaId = getAreaInfoByAreaId;
+
+
+---------------------------------------------------------------------------
+
+--[[
+	根据area_id 获取行政区划树
+]]
+local function getAreaTree(self,area_id)
+	local areaModel = require "base.area.model.AreaModel";
+	local resultTable = {};
+	--table.insert(resultTable, area_res);
+	local DBUtil = require "common.DBUtil";
+	if area_id == nil or area_id =="" then
+		--String tree_data = "[{ \"id\":1, \"name\":\"中国行政区域\", \"isParent\":true}]";
+		local result={};
+		result.id = 0;
+		result.name = "中国行政区域";
+		result.isParent=true;
+		table.insert(resultTable, result);
+		return resultTable;
+	else 
+		local query_sql="select area_id,area_name from t_base_area where parent_id ="..area_id;
+		ngx.log(ngx.ERR,"查询行政区划SQL："..query_sql);
+		local query_res=DBUtil: querySingleSql(query_sql);
+		if not query_res or not query_res[1] then 
+			return result;
+		end
+		for index=1,#query_res do
+			local result = {};
+			result.id = query_res[index]["area_id"]
+			result.name = query_res[index]["area_name"]
+			
+			local query_count_sql = "select count(1) AS COUNT from t_base_area where parent_id ="..query_res[1]["area_id"];
+			local query_count_res = DBUtil: querySingleSql(query_count_sql);
+			if tonumber(query_count_res[1]["COUNT"]) >0 then  
+			   result.isParent=true;
+			else
+				result.isParent=false;
+			end
+			table.insert(resultTable, result);
+		end
+		
+	end
+	return resultTable;
+
+end
+_AreaModel.getAreaTree = getAreaTree;
+
+---------------------------------------------------------------------------
+return _AreaModel;

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link href="../../css/bk/css/bkh_css.css"  rel="stylesheet"  type="text/css" />
+<link href="../../css/bk/customskin.css"  rel="stylesheet"  type="text/css" />
+
+<script type="text/javascript" src="../../js/jquery/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../../js/artDialog4.1.7/artDialog.js?skin=default"></script>
+<script type="text/javascript" src="../../js/artDialog4.1.7/plugins/iframeTools.js"></script>
+
+<script type="text/javascript" src="../../js/datepicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../js/jquery/jquery.cookie.js"></script>
+<script type="text/javascript" src="../../js/template-native.js"></script>
+
+
+<link type="text/css" rel="stylesheet" href="../../js/simplePagination/simplePagination.css"/>
+<script type="text/javascript" src="../../js/simplePagination/simplePagination.js"></script>
+
+
+<!-- must -->
+<script type="text/javascript" src="../../js/jsp/bk/bkArticle/bkClassificationListModel.js"></script>
+<link rel="stylesheet" type="text/css" href="../../css/model/model1.css" />
+
+
+<script type="text/javascript">
+<!--
+
+
+var rootPath = getRootPath();
+function getRootPath(){
+	var strFullPath = window.document.location.href;
+    var strPath = window.document.location.pathname;
+    return strPath;
+}
+var sysPath = getSysPath();
+function getSysPath(){
+    return rootPath.substring(0, rootPath.substr(1).indexOf('/')+1);
+}
+
+function getQueryString(name)
+{
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+}
+
+$(function(){
+	bkClassificationListModel.init({
+		contextPath : sysPath,
+		user_id : $.cookie("person_id"),
+		login_id:$.cookie("person_id")
+	});
+});
+
+//-->
+</script>
+</head>
+<body>
+
+<div class=" model1">
+	<div id="bkclassificationListPannel">
+ <div class="bkh_sybw">
+        <div class="bkh_sybw_top">
+          <h1>大分类管理</h1>
+        </div>
+        <!--------------博文list _博客后台_所有博文 ------------------------->
+        <div class="bkh_list_dfl_div">
+         <div class="bkh_list_dfl_btn"> <a href="javascript:void(0)" class="button01" name="批量删除" id="btn_delAlldfl"></a> <a href="javascript:void(0)" class="button03" name="增加" onclick="addArticleType()"></a></div>
+          <table class="bkh_list_dfl" width="100%" cellspacing="1" cellpadding="1" style="border:0px;border-top: 1px solid #d4d3d3;  border-right: 1px solid #d4d3d3;">
+          	<thead>
+            <tr>
+              <th width="4%" scope="col"><input type="checkbox" class="allCheckBox"/></th>
+              <th width="4%" scope="col">序号</th>
+              <th width="60%" scope="col">分类名称</th>
+              <th width="10%" scope="col">所属</th>
+              <th width="10%" scope="col">状态</th>
+              <th width="10%" scope="col">操作</th>
+            </tr>
+          </thead>
+		<tbody id="column_span" style="margin-bottom:8px;"></tbody>
+		<script type="text/html" id="column_script">
+				<% for (var i = 0; i < list.length; i ++) { %>
+			 				<tr id="page_bkArticle_<%=list[i].ARTICLETYPE_ID%>">
+								<td>
+									<input type="checkbox" value="<%=list[i].ARTICLETYPE_ID%>" class="oneCheckBox"/>
+								</td>
+								<td><%=i+1%></td>
+								<td>
+									<span class="updatetext_articleType_name"><%=list[i].ARTICLETYPE_NAME%></span>
+								</td>
+								<td>
+										<select class="updateChange_type">
+														<option value="5" <% if(list[i].TYPE==5){%> selected<%}%> >教师</option>
+														<option value="5" <% if(list[i].TYPE==6){%> selected<%}%> >学生</option>  
+										</select>
+								</td>
+								<td>
+									<select class="updateChange_is_show">
+											<option value="1" <% if(list[i].IS_SHOW==1){%> selected<%}%> >启用</option>
+										  <option value="0" <% if(list[i].IS_SHOW==0){%> selected<%}%> >停用</option>
+									</select>
+								</td>
+								<td class="delete">
+				 					<a href="#" title="删除" class="btn_deldfl"><img src="../../images/bk/bkh_bwgl_content3_ico02.jpg" width="13" height="13" alt="删除" style="width:100%"/></a>
+								</td>
+
+						</tr>
+			 <%}%>	
+		</script>
+          
+          </table>
+        </div>
+	
+		
+		</div>
+			<span style="display:none" id="roleList">
+	<select id="type">
+			<option value="5">教师</option>
+			<option value="6">学生</option>
+	</select>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+获取快乐分享列表
+1. 接口地址：/dsideal_yy/space/activity_share/list
+2．参数
+    person_id
+    identity_id
+    message_type
+    org_id
+    page_num
+    page_size
+3．Get
+4．响应格式：
+     {
+        "success":true
+        "pageNum": 1,
+	    "totalPage": 总页数,
+	    "totalRow":总记录数,
+        "pageSize":每页条数,
+        list:[
+            {
+                title:标题，
+                view_num:查看次数，
+                reply_num：评论次数.
+                create_date:创建日期
+                id: id
+            },{}
+		]
+}
+保存快乐分享
+1接口地址: /dsideal_yy/ypt/space/activity_share/save
+2.参数
+    title
+    context
+    person_id
+    person_name
+    identity_id
+    message_type
+    org_ids --逗号分格.
+    list:[
+        {
+            file_id
+            style
+            sequence
+            memo
+            source 来源，1本地上传，2相册
+        },{}
+    ]
+ 4.post
+ 5.响应格式：
+	{
+      	"success":true,
+       	"info":成功
+    }
+    {"info":{"name":"","data":"请求失败"},"success":false}
+
+修改快乐分享
+1接口地址: /dsideal_yy/ypt/space/activity_share/update
+2.参数
+id
+title
+context
+person_id
+person_name
+identity_id
+message_type
+list:[{
+	file_id
+	style
+    sequence
+    memo
+    source 来源，1本地上传，2相册
+},{
+
+}]
+ 4.post
+ 5.响应格式：
+	{
+      	"success":true,
+       	"info":成功
+      }
+{"info":{"name":"","data":"请求失败"},"success":false}
+ 删除快乐分享
+1接口地址: /dsideal_yy/ypt/space/activity_share/delete
+2.参数
+		id.
+		org_id可选
+3.post
+4.响应格式
+	{
+      	"success":true,
+       	"info":成功
+      }
+{"info":{"name":"","data":"请求失败"},"success":false}
+查看快乐分享
+1接口地址: /dsideal_yy/space/activity_share/view
+2.参数
+		id.
+3.get
+4.响应格式
+	{
+     	title
+        context
+        id
+        view_count
+        list:[
+                {
+                    file_id:
+                    memo
+                    style
+                    create_date
+                    source 来源，1本地上传，2相册
+                }
+        ]
+    }
+{"info":{"name":"","data":"请求失败"},"success":false}
+
+
+通过共享id获取机构id列表.
+1接口地址: /dsideal_yy/space/activity_share/org_list
+2.参数
+    id.
+3.get
+4.响应格式.
+[{"org_id":1}]
+
+
+修改共享
+1接口地址:/dsideal_yy/ypt/space/activity_share/update_share
+2.参数.
+    id.
+    identity_id
+    org_ids 多个用,分格.
+3.post
+4.响应格式
+{success= true}
+{success=false}

@@ -1,0 +1,23 @@
+2015-08-12 09:06:50: -- Analysis Started by User
+2015-08-12 09:06:50: 左侧: State file does not exist: D:/云平台/lua/base/group/_gsdata_/_file_state_v4._gs
+2015-08-12 09:06:51: 右侧: State file does not exist: sftp://10.10.3.199/usr/local/lua_script/base/group/_gsdata_/_file_state_v4._gs
+2015-08-12 09:06:53: /model/GroupModel.lua: 冲突: 新文件有变化
+2015-08-12 09:06:53: 分析完毕并发现冲突情况。如需解决冲突请选择正常的同步方向。
+2015-08-12 09:06:53: 变更：4， 冲突：1， 复制时间：， 复制状态：/25， 错误： , All: 29
+2015-08-12 09:06:53: Left to Right: Copy File: 3 
+2015-08-12 09:06:53: ----- ：分析已结束。 历时 00:00:07， 速度： 4 个文件/秒 -----
+2015-08-12 09:06:53: 
+2015-08-12 09:07:18: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /model/GroupModel.lua
+2015-08-12 09:07:18: Done.
+2015-08-12 09:07:41: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /model/GroupModel.lua
+2015-08-12 09:07:41: Done.
+2015-08-12 09:07:59: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /model/GroupModel.lua
+2015-08-12 09:07:59: Done.
+2015-08-12 09:08:12: New _gsdata_ folder(s) created, so rescan all job folders for their ghosts
+2015-08-12 09:08:12: == Sync Started by User
+2015-08-12 09:08:12: 新建复制 'D:/云平台/lua/base/group/controller/queryGroup-修改前备份20150808.lua' -> 'sftp://10.10.3.199/usr/local/lua_script/base/group/controller/queryGroup-修改前备份20150808.lua'
+2015-08-12 09:08:13: 新建复制 'D:/云平台/lua/base/group/model/GroupModel - 修改前备份20150808.lua' -> 'sftp://10.10.3.199/usr/local/lua_script/base/group/model/GroupModel - 修改前备份20150808.lua'
+2015-08-12 09:08:13: 新建复制 'D:/云平台/lua/base/group/model/GroupModel - 副本.lua' -> 'sftp://10.10.3.199/usr/local/lua_script/base/group/model/GroupModel - 副本.lua'
+2015-08-12 09:08:13: 覆盖复制 'D:/云平台/lua/base/group/model/GroupModel.lua' -> 'sftp://10.10.3.199/usr/local/lua_script/base/group/model/GroupModel.lua' (User Action)
+2015-08-12 09:08:13: ===== ：同步完毕。时间：00:00:03，速度： 21.5 KB/s =====, 项目同步未必： 29，错误： 
+2015-08-12 09:08:13: 

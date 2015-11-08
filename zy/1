@@ -1,0 +1,326 @@
+--[[
+@Author chuzheng
+@date 2014-12-22
+--]]
+local say = ngx.say
+
+--引用模块
+local ssdblib = require "resty.ssdb"
+
+local cjson = require "cjson"
+--获取前台传过来的参数
+local request_method = ngx.var.request_method
+local args,err
+if request_method == "GET" then
+        args,err = ngx.req.get_uri_args()
+else
+        ngx.req.read_body()
+        args,err = ngx.req.get_post_args()
+end
+
+if not args then
+        say("{\"success\":false,\"info\":\""..err.."\"}")
+         return
+end
+
+
+local param_json=args["param_json"]
+
+local teacher_id = ngx.var.cookie_person_id
+
+if not teacher_id or string.len(teacher_id) == 0 or not param_json or string.len(param_json) == 0  then
+        say("{\"success\":false,\"info\":\"参数错误！\"}")
+        return
+end
+
+
+--Split方法
+function Split(szFullString, szSeparator)
+local nFindStartIndex = 1
+local nSplitIndex = 1
+local nSplitArray = {}
+while true do
+   local nFindLastIndex = string.find(szFullString, szSeparator, nFindStartIndex)
+   if not nFindLastIndex then
+    nSplitArray[nSplitIndex] = string.sub(szFullString, nFindStartIndex, string.len(szFullString))
+    break
+   end
+   nSplitArray[nSplitIndex] = string.sub(szFullString, nFindStartIndex, nFindLastIndex - 1)
+   nFindStartIndex = nFindLastIndex + string.len(szSeparator)
+   nSplitIndex = nSplitIndex + 1
+end
+return nSplitArray
+end
+
+
+--创建ssdb连接
+local ssdb = ssdblib:new()
+local ok, err = ssdb:connect(v_ssdb_ip, v_ssdb_port)
+if not ok then
+    say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+--创建mysql连接
+
+
+local mysql = require "resty.mysql"
+local db = mysql:new()
+db:connect{
+    host = v_mysql_ip,
+    port = v_mysql_port,
+    database = v_mysql_database,
+    user = v_mysql_user,
+    password = v_mysql_password,
+    max_packet_size = 1024*1024
+}
+
+--创建redis连接
+
+local redis = require "resty.redis"
+local cache = redis.new()
+local ok,err = cache.connect(cache,v_redis_ip,v_redis_port)
+if not ok then
+    ngx.say("{\"success\":\"false\",\"info\":\""..err.."\"}")
+    return
+end
+
+--前台传来的参数处理
+local str = ngx.decode_base64(param_json)
+local param = cjson.decode(str)
+
+--获取mysql数据库中需要sphinx的数据
+local zy_name=param.zy_name
+local scheme_id=param.scheme_id
+local structure_id=param.structure_id
+local subject_id=param.subject_id
+--留作业，作业id
+local zy_id=param.zy_id
+--判断是否是编辑,1是编辑，0不是编辑
+local isedit=1
+
+
+if not zy_id or string.len(zy_id)==0 then
+	local zyid=ssdb:incr("homework_zy_pk")
+	zy_id=zyid[1]
+	isedit=0
+end
+
+--是否发布
+local is_public=param.is_public
+--获取structure_id_char,scheme_id_char用于导数据？？？
+local char_id = cache:hmget("t_resource_structure_"..structure_id,"structure_id_char","scheme_id_char")
+
+local structure_id_char=char_id[1]
+local scheme_id_char=char_id[2]
+--判断发没发布，发布了执行建立作业学生对于关系
+if is_public == "1" then
+	
+	--判断试卷类型，格式化试卷去调用试卷接口存储，非格式化试卷则直接保存起来
+	local paper_list=param.paper_list
+	local zgs={}
+	local kgs={}
+	--格式化试卷
+	if paper_list[1] and paper_list[1].paper_source == "1" then
+	
+		local paperids=paper_list[1].paper_id_int
+		--local papers = ngx.location.capture("/dsideal_yy/ypt/paper/getQuesByPaper?paper_id_int="..paperids)
+                local papers = ngx.location.capture("/getstudents")
+		
+		local paper
+		say(papers.status.."-----------------------------------------------------")
+                if papers.status == 200 then
+                                paper = cjson.decode(papers.body).table_List
+                else
+                                say("{\"success\":false,\"info\":\"查询试卷信息错误！\"}")
+                                return
+                end
+		--local zgs={}
+		--local kgs={}
+		local a=1
+		local b=1
+		if paper then
+		for i=1,#paper do
+			if paper[i].kg_zg==1 then
+				local kg={}
+				kg["file_id"]=paper[i].file_id
+				kg["question_answer"]=paper[i].question_answer
+				kg["question_type_id"]=paper[i].question_type_id
+				kg["kg_zg"]=paper[i].kg_zg
+				kg["question_id_char"]=paper[i].question_id_char
+				kgs[a]=kg
+				a=a+1
+			else
+				local zg={}
+                                zg["file_id"]=paper[i].file_id
+                                zg["question_answer"]=paper[i].question_answer
+                                zg["question_type_id"]=paper[i].question_type_id
+                                zg["kg_zg"]=paper[i].kg_zg
+                                zg["question_id_char"]=paper[i].question_id_char
+                                zgs[a]=zg
+                                b=b+1
+			end
+		end
+		end
+	end
+	--非格式化试卷
+        if paper_list[1] and paper_list[1].paper_source == "2" then
+
+                jsonDatafgsh=paper_list
+
+        end
+	--资源
+	--jsonDatazy=cjson.encode(param.zy_fj_list)
+	--保存试卷资源信息到json中
+	--ssdb:multi_set("homework_zy_papersource_"..zy_id,"zg",jsonDatazg,"kg",jsonDatakg,"fgsh",jsonDatafgsh,"fj",jsonDatazy)
+	--直接保存到作业的大json里
+	param.zg=zgs
+	param.kg=kgs
+	param.fgsh=jsonDatafgsh
+	--获取作业onDatafgsh级对象
+	local class_id_arrs=param.class_id_arrs
+	--保存学生作业对应关系
+	if string.len(class_id_arrs)>0  then
+		local classs = Split(class_id_arrs,",")
+		local sql_str=""
+		for m=1,#classs do
+			local studentes = ngx.location.capture("/getstudents",{
+                		args={class_id=classs[m]}
+        		})
+        		local student
+        		if studentes.status == 200 then
+        			student = cjson.decode(studentes.body)
+        		else
+                		say("{\"success\":false,\"info\":\"查询班级下学生失败！\"}")
+                		return
+        		end
+		
+        		--查询组信息
+        		for i=1,#student do
+                		--学生id
+				--student[i].id
+				--关系表id
+				local zy_relate_id=ssdb:incr("homework_relate_id")
+				--保存作业学生对应关系
+				--ssdb:multi_hset("homework_zy_student_relate_"..zy_relate_id[1],"zy_id",zy_id,"student_id",student[i].id,"flat","0")
+				ssdb:hset("homework_zy_relateidbystudentidzyid",zy_id..student[i].id,zy_relate_id[1])
+
+				local groupid,err = ssdb:hget("homework_groupbystudent_"..classs[m].."_"..student[i].id,teacher_id.."_"..subject_id)
+				if  not  groupid then
+					say("{\"success\":false,\"info\":\"组查询失败！\"}")
+					return
+				end
+				--判断这个学生是否有组，没有组则在存入0
+				local groupstudentid=0
+				if string.len(groupid[1])>0 then
+					groupstudentid=groupid[1]	
+				end
+
+
+				if string.len(sql_str)>0 then
+					sql_str=sql_str..",("..zy_relate_id[1]..","..zy_id..","..student[i].id..",0,"..classs[m]..","..groupstudentid..")"
+				else
+					sql_str="("..zy_relate_id[1]..","..zy_id..","..student[i].id..",0,"..classs[m]..","..groupstudentid..")"
+				end
+				--db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat) values("..zy_relate_id[1]..","..zy_id..","..student[i].id..",0)")
+				--保存作业学生对应关系
+				ssdb:multi_hset("homework_zy_student_relate_"..zy_relate_id[1],"zy_id",zy_id,"student_id",student[i].id,"flat","0","class_id",classs[m],"group_id",groupstudentid)
+
+        		end
+		
+		end	
+		if string.len(sql_str)>0 then
+			local res, err, errno, sqlstate=db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat,CLASS_ID,GROUP_ID) values "..sql_str)
+			if not res then    
+                    		ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")    
+                    		return
+                	end 
+		end
+	end
+	--获取班级组对象
+	local group_id_arrs=param.group_id_arrs
+	--保存学生作业对应关系
+	if string.len(group_id_arrs)>0  then
+        	local groups = Split(group_id_arrs,",")
+		local sql_str=""
+        	for m=1,#groups do
+			local groupids = Split(groups[m],"_")
+			local students,err = ssdb:hscan("homework_studentbygroup_"..groupids[1].."_"..teacher_id.."_"..subject_id.."_"..groupids[2],"","",200)
+			if  not  students then
+				say("{\"success\":false,\"info\":\"组下学生查询失败！\"}")
+				return
+			end
+			if students[1]~="ok" then
+				for j=1,#students,2 do
+					--关系表id
+					local zy_relate_id=ssdb:incr("homework_relate_id")
+					if string.len(sql_str)>0 then
+						 sql_str=sql_str..",("..zy_relate_id[1]..","..zy_id..","..students[j]..",0,"..groupids[1]..","..groupids[2]..")"
+					else
+						 sql_str="("..zy_relate_id[1]..","..zy_id..","..students[j]..",0,"..groupids[1]..","..groupids[2]..")"
+					end
+					--保存作业学生对应关系
+					ssdb:multi_hset("homework_zy_student_relate_"..zy_relate_id[1],"zy_id",zy_id,"student_id",students[j],"flat","0","class_id",groupids[1],"group_id",groupids[2])
+                        		ssdb:hset("homework_zy_relateidbystudentidzyid",zy_id..students[j],zy_relate_id[1])        
+                        		--db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat) values("..zy_relate_id[1]..","..zy_id..","..students[j]..",0)")					
+				end
+			end
+        	end
+		if string.len(sql_str)>0 then
+                	local res, err, errno, sqlstate=db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat,CLASS_ID,GROUP_ID) values "..sql_str)
+        		if not res then    
+                    		ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")    
+                    		return
+               		 end
+		end
+	end
+end
+--只有第一次时建立基础的对用关系
+if isedit ==0 then
+	--保存个基础的学生作业对应关系
+	local zy_relate_id=ssdb:incr("homework_relate_id")
+	ssdb:multi_hset("homework_zy_student_relate_"..zy_relate_id[1],"zy_id",zy_id,"student_id","0","flat","0","class_id","0","group_id","0")
+	--say("insert into t_zy_zytostudent (id,zy_id,student_id,flat) values("..zy_relate_id[1]..","..zy_id..",0,0)")
+	db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat,CLASS_ID,GROUP_ID) values("..zy_relate_id[1]..","..zy_id..",0,0,0,0)")	
+end
+
+--获取时间戳ts
+local t=ngx.now()
+local n=os.date("%Y%m%d%H%M%S").."00"..string.sub(t,12,14)
+n=n..string.rep("0",19-string.len(n))
+local ts=n
+local update_ts=n
+local create_time=os.date("%Y-%m-%d %H:%M:%S")
+
+--ssdb中保存所有信息
+param.create_time=create_time
+param.teacher_id=teacher_id
+--保存整个作业信息到ssab中
+ssdb:hset("homework_zy_content",zy_id,cjson.encode(param))
+
+
+--db:query("insert into t_zy_zytostudent (id,zy_id,student_id,flat) values("..zy_relate_id[1]..","..zy_id[1]..","..teacher_id..",0)")
+
+if isedit ==0 then
+--作业信息插入mysql数据库
+	local res, err, errno, sqlstate =db:query("insert into t_zy_info (ID,ZY_NAME,CREATE_TIME,TS,UPDATE_TS,SCHEME_ID,SCHEME_ID_CHAR,STRUCTURE_ID,STRUCTURE_ID_CHAR,SUBJECT_ID,TEACHER_ID,IS_PUBLIC) values ("..zy_id..",\'"..zy_name.."\',\'"..create_time.."\',\'"..ts.."\',\'"..update_ts.."\',"..scheme_id..",\'"..scheme_id_char.."\',"..structure_id..",\'"..structure_id_char.."\',"..subject_id..","..teacher_id..","..is_public..")")
+
+	if not res then
+    		ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
+    		return
+	end
+else
+	--作业信息更新mysql数据库
+        local res, err, errno, sqlstate =db:query("update t_zy_info set ZY_NAME=\'"..zy_name.."\',UPDATE_TS=\'"..update_ts.."\',IS_PUBLIC="..is_public.." where ID="..zy_id)
+        if not res then
+                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
+                return
+        end
+end
+
+
+say("{\"success\":true,\"info\":\"保存成功\",\"zy_id\":\""..zy_id.."\"}")
+
+ssdb:set_keepalive(0,v_pool_size)
+cache:set_keepalive(0,v_pool_size)
+db:set_keepalive(0,v_pool_size)
+

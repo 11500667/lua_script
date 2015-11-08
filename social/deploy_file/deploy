@@ -1,0 +1,83 @@
+发布bbs 模块步骤
+1.创建表
+    执行创建表 create.sql
+2.创建配置文件、sphinx脚本、修改调度文件 .
+    1)创建sphinx表
+           CREATE TABLE `t_social_bbs_topic_sphinxse` (
+             `id` int(11) unsigned NOT NULL,
+             `weight` int(11) DEFAULT '1',
+             `query` varchar(20480) NOT NULL,
+             KEY `query` (`query`(1024))
+           ) ENGINE=SPHINX DEFAULT CHARSET=utf8 CONNECTION='sphinx://127.0.0.1:3335'
+          CREATE TABLE `t_social_bbs_post_sphinxse` (
+             `id` int(11) unsigned NOT NULL,
+             `weight` int(11) DEFAULT '1',
+             `query` varchar(20480) NOT NULL,
+             KEY `query` (`query`(1024))
+           ) ENGINE=SPHINX DEFAULT CHARSET=utf8 CONNECTION='sphinx://127.0.0.1:3336'
+
+    2)
+        拷贝csft_bbs_topic.conf 到 /usr/local/sphinx/etc下.
+            修改 sql_host          = 对应ip
+            修改 sql_pass         = 密码
+            修改 sql_user         = 用户名
+            修改 sql_db           = 数据库
+            修改 sql_port         = 端口
+        拷贝csft_bbs_post.conf 到 /usr/local/sphinx/etc下.
+            修改 sql_host         = 对应ip
+            修改 sql_pass         = 密码
+            修改 sql_user         = 用户名
+            修改 sql_db           = 数据库
+            修改 sql_port         = 端口
+
+        拷贝csft_bbs_topic.sh 到 /usr/local/sphinx_sh/下.
+        拷贝csft_bbs_post.sh 到  /usr/local/sphinx_sh/下.
+
+    3)在sphinx_search_counter表中添加两个ts最大值
+        id =25
+        id =26
+    4)查看linux的定时任务crontab -e
+        添加:
+        * * * * * /usr/local/sphinx_sh/csft_bbs_post.sh > /dev/null 2>&1
+        * * * * * /usr/local/sphinx_sh/csft_bbs_topic.sh > /dev/null 2>&1
+         service crond restart
+         chmod 777 csft_bbs_*
+    5)配置全局重新索引
+        编辑：
+        /usr/local/sphinx_sh/sphinx_all.sh 在最下面添加
+        /usr/local/sphinx/bin/indexer index_bbs_topic -c /usr/local/sphinx/etc/csft_bbs_topic.conf --rotate
+        /usr/local/sphinx/bin/indexer index_bbs_post -c /usr/local/sphinx/etc/csft_bbs_post.conf --rotate
+    6）启动、创建、停止索引
+        先启动，然后创建
+        #启动
+        /usr/local/sphinx/bin/searchd -c /usr/local/sphinx/etc/csft_bbs_topic.conf
+        #创建索引
+        /usr/local/sphinx/bin/indexer -c /usr/local/sphinx/etc/csft_bbs_topic.conf --rotate --all
+        #停止
+        /usr/local/sphinx/bin/searchd -c /usr/local/sphinx/etc/csft_bbs_topic.conf --stop
+
+        #启动
+        /usr/local/sphinx/bin/searchd -c /usr/local/sphinx/etc/csft_bbs_post.conf
+        #创建索引
+        /usr/local/sphinx/bin/indexer -c /usr/local/sphinx/etc/csft_bbs_post.conf --rotate --all
+        #停止
+        /usr/local/sphinx/bin/searchd -c /usr/local/sphinx/etc/csft_bbs_post.conf --stop
+
+3.发布程序
+
+     1)拷贝common ，ctl,router,service包到199 的/usr/local/lua_script/social目录 .
+
+4.修改nginx文件
+     1)修改/usr/local/openresty/nginx/conf/module/social.conf
+     添加:
+     location  /dsideal_yy/bbs {
+         set $path_uri 'dsideal_yy/bbs';
+         content_by_lua_file /usr/local/lua_script/social/ctl/index.lua;
+     }
+     location  /dsideal_yy/ypt/bbs {
+         set $path_uri 'dsideal_yy/ypt/bbs';
+         content_by_lua_file /usr/local/lua_script/social/ctl/bbsctrl.lua;
+     }
+
+
+
