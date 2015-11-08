@@ -1,0 +1,307 @@
+local request_method = ngx.var.request_method
+local args = nil
+if "GET" == request_method then
+    args = ngx.req.get_uri_args()
+else
+    ngx.req.read_body()
+    args = ngx.req.get_post_args()
+end
+
+ngx.log(ngx.ERR,"@@@@@@@@@".."登ssss录".."@@@@@@@@@")
+
+local cjson = require "cjson"
+
+--先判断参数是否正确
+if tostring(args["user"])=="nil" then
+    ngx.say("{\"success\":false,\"info\":\"user参数错误！\"}")    
+    return
+end
+if tostring(args["pwd"])=="nil" then
+    ngx.say("{\"success\":false,\"info\":\"pwd参数错误！\"}")
+    return
+end
+
+
+if v_is_cas ~= "1" then
+
+--连接redis服务器
+local redis = require "resty.redis"
+local cache = redis:new()
+local ok,err = cache:connect(v_redis_ip,v_redis_port)
+if not ok then
+    ngx.say("{\"success\":\"false\",\"info\":\""..err.."\"}")
+    return
+end
+
+--连接SSDB
+local ssdb = require "resty.ssdb"
+local ssdb_db = ssdb:new()
+local ok, err = ssdb_db:connect(v_ssdb_ip, v_ssdb_port)
+if not ok then
+    ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+
+
+--获取用户名参数
+local user = tostring(args["user"])
+--获取密码参数并转成MD5
+local pwd = ngx.md5(tostring(args["pwd"]))
+
+
+--获取redis中该用户的启用状态
+local redis_buse,err = cache:hget("login_"..user,"b_use")
+if not redis_buse then
+    ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+if tostring(redis_buse)=="userdata: NULL" then
+    ngx.say("{\"success\":false,\"info\":\"用户不存在！\"}")
+    return
+end
+--判断该用户是否启用
+if redis_buse~="1" then
+    ngx.say("{\"success\":false,\"info\":\"该用户已停用！\"}")
+    return
+end
+--获取redis中该用户的身份
+local redis_identity,err = cache:hget("login_"..user,"identity_id")
+if not redis_identity then
+    ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+--判断该用户是否可以前台登录
+if redis_identity~="5" then
+    if redis_identity~="6" then
+	if redis_identity~="7" then
+	    if redis_identity~="11" then
+	        ngx.say("{\"success\":false,\"info\":\"该用户的身份不允许登录！\"}")
+    	        return
+	    end
+	end
+    end
+end
+--获取redis中获取该用户的密码
+local redis_pwd,err = cache:hget("login_"..user,"pwd")
+if not redis_pwd then
+    ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+
+local function urlencode(str)
+   if (str) then
+      str = string.gsub (str, "\n", "\r\n")
+      str = string.gsub (str, "([^%w ])",
+         function (c) return string.format ("%%%02X", string.byte(c)) end)
+      str = string.gsub (str, " ", "+")
+   end
+   return str    
+end
+
+
+--判断参数传过来的密码和redis里存储的密码是否匹配
+if redis_pwd==pwd then
+
+    local str = "{\"success\":true,\"person_id\":\"##\",\"person_name\":\"##\",\"identity\":\"##\",\"token\":\"##\",\"avatar_url\":\"##\",\"class_id\":\"##\",\"mac_sum\":\"##\"}"
+    local res,err = cache:hmget("login_"..user,"person_id","person_name","identity_id","token")
+    if not res then
+        ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+        return
+    end
+
+    local audit_status = cache:hget("login_"..user,"audit_status")
+
+    if audit_status ~= ngx.null then
+	if tostring(audit_status) == "2" then
+	    ngx.say("{\"success\":false,\"info\":\"该用户正在审核中！\"}")
+            return
+	end 
+	if tostring(audit_status) == "3" then
+            ngx.say("{\"success\":false,\"info\":\"该用户审核未通过！\"}")
+            return
+        end
+    end
+
+    local shi_id = cache:hget("person_"..res[1].."_"..res[3],"shi")
+    local xiao_id = cache:hget("person_"..res[1].."_"..res[3],"xiao")
+
+    if shi_id ~=ngx.null and xiao_id~=ngx.null then
+	ssdb_db:zincr("active_user_"..shi_id,res[1])
+	ssdb_db:zincr("active_bureau_"..shi_id,xiao_id)
+    end
+    --放回到SSDB连接池
+    ssdb_db:set_keepalive(0,v_pool_size)
+    for i=1,#res do
+	str = string.gsub(str,"##",res[i],1)
+    end
+    local avatar_url = cache:hmget("person_"..res[1].."_"..res[3],"avatar_url")[1]
+    str = string.gsub(str,"##",avatar_url,1)
+    --redis放回连接池
+    cache:set_keepalive(0,v_pool_size)
+
+    --连接mysql数据库
+        local mysql = require "resty.mysql"
+        local mysql_db = mysql:new()
+        mysql_db:connect{
+                host = v_mysql_ip,
+                port = v_mysql_port,
+                database = v_mysql_database,
+                user = v_mysql_user,
+                password = v_mysql_password,
+                max_packet_size = 1024*1024
+        }
+
+        local person_id = res[1]
+        local identity_id = res[3]
+        local class_id = "-1"
+
+        if tostring(identity_id) == "6" then
+                local res = mysql_db:query("SELECT class_id FROM t_base_student WHERE student_id = "..person_id)
+                class_id = res[1]["class_id"]
+        end
+        str = string.gsub(str,"##",class_id,1)
+	ngx.location.capture("/dsideal_yy/new_djmh/setHuoYue?person_id="..res[1].."&random="..math.random(1000))
+    ngx.header["Set-Cookie"] = {"person_id="..res[1]..";path=/","person_name="..urlencode(res[2])..";path=/","identity_id="..res[3]..";path=/","token="..res[4]..";path=/","avatar_url="..avatar_url..";path=/","class_id="..class_id..";path=/"}
+	
+	--陈续刚20150506添加  备注：str变量新增了 \"mac_sum\":\"##\"
+	
+	--获取登录来源信息和mac信息
+	--1:teach 2:office
+	local usertype = tostring(args["sys_type"])
+	local usermac = tostring(args["user_mac"])
+	if usermac~="nil" and usertype ~="nil" then
+	--限制的登录机器数
+	local hostsum = 3;
+	if usermac =="kong" then
+		ngx.say("{\"success\":\"false\",\"info\":\"获取机器mac地址出错，无发登录！\"}");
+		return;
+	end
+		local quote = ngx.quote_sql_str
+		--连接mysql数据库
+		local mysql = require "resty.mysql"
+		local db = mysql:new()
+		db:connect{
+			host = v_mysql_ip,
+			port = v_mysql_port,
+			database = v_mysql_database,
+			user = v_mysql_user,
+			password = v_mysql_password,
+			max_packet_size = 1024*1024
+		}
+		
+		--查询数据库，对比该mac地址是否已经在列表中
+		--查询数据库，获取已经登录过的机器列表
+		local countSql = "select count(1) as allsum from t_base_person_loginrecord where person_id="..res[1].." and system_type="..usertype..";select count(1) as hdsum from t_base_person_loginrecord where person_id="..res[1].." and system_type="..usertype.." and host_mac='"..usermac.."';";
+		local results, err, errno, sqlstate = db:query(countSql);
+		if not results then
+			ngx.say("{\"success\":\"false\",\"info\":\"查询数据失败！\"}");
+			ngx.log(ngx.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ".");
+			return;
+		end
+		local allsum = results[1]["allsum"]
+		local res1 = db:read_result()		
+		local hdsum = res1[1]["hdsum"]
+
+		if tonumber(allsum) <=tonumber(hostsum)  then
+			local n = ngx.now();
+			local ts2 = os.date("%Y%m%d%H%M%S").."00"..string.sub(n,12,14);
+			ts2 = ts2..string.rep("0",19-string.len(ts2));
+			if tonumber(allsum) == tonumber(hostsum) and tonumber(hdsum) == 0 then
+				ngx.say("{\"success\":\"false\",\"info\":\"登录的机器数已经超过"..hostsum.."台！\"}");
+				return;
+			else
+				if tonumber(hdsum) == 0  then
+					local insertsql = "insert into  t_base_person_loginrecord(person_id,system_type,host_mac,lastts)values("..res[1]..","..quote(usertype)..","..quote(usermac)..","..quote(ts2)..");"
+					
+					local results, err, errno, sqlstate = db:query(insertsql);
+					if not results then
+						ngx.say("{\"success\":\"false\",\"info\":\"查询数据失败！\"}");
+						ngx.log(ngx.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ".");
+						return;
+					end
+					str = string.gsub(str,"##",tonumber(allsum)+1,1)
+				else
+					local updatesql = "update t_base_person_loginrecord set lastts="..quote(ts2).." where person_id = "..quote(res[1]).." and system_type = "..quote(usertype).." and host_mac = "..quote(usermac)..""
+					local results, err, errno, sqlstate = db:query(updatesql);
+					if not results then
+						ngx.say("{\"success\":\"false\",\"info\":\"查询数据失败！\"}");
+						ngx.log(ngx.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ".");
+						return;
+					end
+					str = string.gsub(str,"##",tonumber(allsum),1)
+				end
+			end
+		else
+			ngx.say("{\"success\":\"false\",\"info\":\"登录的机器数已经超过"..hostsum.."台！\"}");
+			return;
+		end
+		
+		--mysql放回连接池
+		db:set_keepalive(0,v_pool_size)
+	end
+	--陈续刚20150506添加
+	
+ngx.say(str)
+else
+    --redis放回连接池
+    cache:set_keepalive(0,v_pool_size)
+    ngx.say("{\"success\":false,\"info\":\"用户名或密码错误！\"}")    
+end
+
+else
+    local login_cas_info = ngx.location.capture("/dsideal_yy/caslogin/dsidealSsoLogin?username="..args["user"].."&password="..args["pwd"].."&random="..math.random(1000))
+    local login_cas_str = login_cas_info.body
+    local login_cas_json = cjson.decode(login_cas_str)
+    if tostring(login_cas_json.success) == "true" then
+       local str = "{\"success\":true,\"person_id\":\"##\",\"person_name\":\"##\",\"identity\":\"##\",\"token\":\"##\",\"avatar_url\":\"##\",\"class_id\":\"##\"}"
+    local res,err = cache:hmget("login_"..user,"person_id","person_name","identity_id","token")
+    if not res then
+        ngx.say("{\"success\":false,\"info\":\""..err.."\"}")
+        return
+    end
+
+    local shi_id = cache:hget("person_"..res[1].."_"..res[3],"shi")
+    local xiao_id = cache:hget("person_"..res[1].."_"..res[3],"xiao")
+
+    if shi_id ~=ngx.null and xiao_id~=ngx.null then
+        ssdb_db:zincr("active_user_"..shi_id,res[1])
+        ssdb_db:zincr("active_bureau_"..shi_id,xiao_id)
+    end
+    --放回到SSDB连接池
+    ssdb_db:set_keepalive(0,v_pool_size)
+    for i=1,#res do
+        str = string.gsub(str,"##",res[i],1)
+    end
+    local avatar_url = cache:hmget("person_"..res[1].."_"..res[3],"avatar_url")[1]
+    str = string.gsub(str,"##",avatar_url,1)
+    --redis放回连接池
+    cache:set_keepalive(0,v_pool_size)
+	
+     --连接mysql数据库
+        local mysql = require "resty.mysql"
+        local mysql_db = mysql:new()
+        mysql_db:connect{
+                host = v_mysql_ip,
+                port = v_mysql_port,
+                database = v_mysql_database,
+                user = v_mysql_user,
+                password = v_mysql_password,
+                max_packet_size = 1024*1024
+        }
+
+        local person_id = res[1]
+        local identity_id = res[3]
+
+        if tostring(identity_id) == "6" then
+                local res = mysql_db:query("SELECT class_id FROM t_base_student WHERE student_id = "..person_id)
+                class_id = res[1]["class_id"]
+        end
+        str = string.gsub(str,"##",class_id,1)
+	
+	ngx.location.capture("/dsideal_yy/new_djmh/setHuoYue?person_id="..res[1].."&random="..math.random(1000))	
+    ngx.header["Set-Cookie"] = {"person_id="..res[1]..";path=/","person_name="..urlencode(res[2])..";path=/","identity_id="..res[3]..";path=/","token="..res[4]..";path=/","avatar_url="..avatar_url..";path=/","class_id="..class_id..";path=/"}
+    ngx.say(str)
+    else
+        ngx.print(tostring(login_cas_str))
+    end
+end
