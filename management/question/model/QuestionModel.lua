@@ -258,8 +258,8 @@ local function examineQuestion(question_id_table,check_type)
 				end
 				local sort_id					= res[i]["sort_id"];
 				local structure_path			= res[i]["structure_path"];
-				local json_question					= res[i]["json_question"];
-				json_question_table					= cjson.decode(ngx.decode_base64(json_question));
+				local json_question				= res[i]["json_question"];
+				json_question_table				= cjson.decode(ngx.decode_base64(json_question));
 				json_question_table.t_title 	= "东师理想提供";
 				local json_question_new 			= ngx.encode_base64(cjson.encode(json_question_table));
 
@@ -292,10 +292,6 @@ local function examineQuestion(question_id_table,check_type)
 			ngx.say("{\"success\":\"false\",\"info\":\"处理数据出错！\"}");
 			return false;
 		end
-
-
-
-
 
 	end
 	
@@ -464,7 +460,10 @@ _QuestionModel.delReview = delReview;
 
 local function delQuestion(question_id_char,structure_ids_table)
 
-	local sql = "update  t_tk_question_info set b_delete=1 , update_ts="..currentTS.." where question_id_char ="..quote(question_id_char);
+	local cache = CacheUtil: getRedisConn();
+
+
+	local sql = "update  t_tk_question_info set b_delete=1 , update_ts="..currentTS.." where question_id_char ="..quote(question_id_char).." and group_id=1 and create_person=1";
 
 	local sqlBase = "select i.structure_id_int,b.content_md5 from t_tk_question_base b inner join t_tk_question_info i on b.question_id_char=i.question_id_char where i.question_id_char ="..quote(question_id_char);
 
@@ -501,6 +500,51 @@ local function delQuestion(question_id_char,structure_ids_table)
 
 		SSDBUtil: hdel("md5_ques_" .. content_md5, "1_2_" .. structure_id_int);
 		SSDBUtil: hdel("md5_ques_" .. content_md5, "1_2");
+	end
+
+	local qryZsdSql = "select t1.structure_id_int, t2.structure_name from t_tk_question_info t1 inner join t_resource_structure t2 on t1.structure_id_int=t2.structure_id and t2.type_id=2 where t1.question_id_char="..quote(question_id_char).." and t1.b_delete=0 and t1.b_in_paper=0 and t1.create_person = 1 and t1.group_id=1 group by t1.structure_id_int";
+
+	local resultZsd = db:query(qryZsdSql);
+
+	if not resultZsd then
+		return false;
+	end
+
+	local strucName = "";
+
+	for i=1, #resultZsd do
+		if strucName == "" or i == #resultZsd then
+			strucName   	=  resultZsd[i]["structure_name"];
+		else
+			strucName   	= strucName .. "，" .. resultZsd[i]["structure_name"];
+		end
+	end
+
+
+	local infoQry = "select id, json_question from t_tk_question_info where 1=1 and question_id_char="..quote(question_id_char).." and b_delete=0 and create_person = 1 and group_id=1";
+
+	local resultInfo = db:query(infoQry);
+
+	if not resultInfo then
+		return false;
+	end
+
+	for i=1, #resultInfo do
+		local id 				= tonumber(resultInfo[i]["id"]);
+		local json_question		= resultInfo[i]["json_question"];
+		local json_question_table					= cjson.decode(ngx.decode_base64(json_question));
+		json_question_table.zsd	= strucName;
+		local json_question_new 			= ngx.encode_base64(cjson.encode(json_question_table));
+
+		local updateStSql = "update t_tk_question_info set json_question="..quote(json_question_new).. ", update_ts="..currentTS.." where id="..id;
+
+		local updateResult = db:query(updateStSql);
+
+		if not updateResult then
+			return false;
+		end
+
+		cache:hmset("question_"..id,"json_question",json_question_new);
 	end
 
 
@@ -546,6 +590,8 @@ local function getQtBySubject(stage_id, subject_id)
 	return true,resultJsonObj;
 end
 _QuestionModel.getQtBySubject = getQtBySubject;
+
+
 
 return _QuestionModel
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../dsideal_yy/dsideal_yy.iml" filepath="$PROJECT_DIR$/../dsideal_yy/dsideal_yy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lua_script.iml" filepath="$PROJECT_DIR$/lua_script.iml" />
+    </modules>
+  </component>
+</project>

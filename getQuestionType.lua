@@ -25,7 +25,7 @@ end
 --连接redis服务器
 local redis = require "resty.redis"
 local cache = redis.new()
-local ok,err = cache.connect(cache,v_redis_ip,v_redis_port)
+local ok,err = cache.connect(cache,v_redis_ip,v_redis_port);
 if not ok then
     ngx.say("{\"success\":\"false\",\"info\":\""..err.."\"}");
     return
@@ -48,7 +48,7 @@ if #qt_id_list~=0 then
     end
 end
 
-table.sort(returnTable,function(a,b) return a.sort_id<b.sort_id end );
+table.sort(returnTable,function(a,b) return tonumber(a.sort_id)<tonumber(b.sort_id) end );
 str_result=cjson.encode(returnTable);
 
 
