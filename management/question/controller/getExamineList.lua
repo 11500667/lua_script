@@ -87,7 +87,7 @@ local limit = pageSize
 local str_maxmatches = pageNumber*100
 
 
-local sql = "SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'filter=b_in_paper,0;filter=b_delete,0;filter=group_id,2;filter=check_status,"..statusStr..";filter=scheme_id_int,"..versionStr..";maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;"
+local sql = "SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'filter=b_in_paper,0;filter=b_delete,0;filter=group_id,2;filter=check_status,"..statusStr..";filter=scheme_id_int,"..versionStr..";groupsort=update_ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;"
 
 local res = db:query(sql);
 

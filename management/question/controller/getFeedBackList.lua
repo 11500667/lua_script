@@ -57,7 +57,7 @@ end
 
 
 
-local conditionSegement = "	from t_base_feedback f left join t_tk_question_info i on f.target_id_char=i.question_id_char where f.target_type=2";
+local conditionSegement = "	from t_base_feedback f inner join t_tk_question_info i on f.target_id_char=i.question_id_char where f.target_type=2 and i.create_person=1 and i.b_delete=0";
 
 -- 判断是否有feedback_status参数
 if feedback_status ~= nil then

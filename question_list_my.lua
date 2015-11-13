@@ -348,9 +348,10 @@ for i=1,#res do
 		if not ok then
 			say("{\"success\":false,\"info\":\""..err.."\"}")
 			return
-		end
+        end
 
-        local result = ssdb:hget(question_id_char.."_"..structure_id_int,"check_status");
+
+        local result = ssdb:hget(cookie_person_id.."_"..cookie_identity_id.."_"..question_id_char.."_"..structure_id_int,"check_status");
 		
 
         if result[1]~="" then

@@ -206,22 +206,67 @@ _QuestionModel.questionCopyOrMove = questionCopyOrMove;
 
 local function examineQuestion(question_id_table,check_type)
 
-
-
 	local db = DBUtil: getDb();
 	local ssdb = SSDBUtil:getDb();
+	local cache = CacheUtil: getRedisConn();
 
 	local update_ts					= currentTS;
 
 	for s=1,#question_id_table do
 
-
 		local question_id_char = question_id_table[s];
 
-
 		if tonumber(check_type) == 1 then
-			local sql = "SELECT id,question_id_char,question_title ,question_tips,question_type_id,question_difficult_id,create_person,group_id,down_count,ts,kg_zg,scheme_id_int,structure_id_int,json_question,json_answer,update_ts,structure_path,b_in_paper ,paper_id_int,b_delete,oper_type,check_status,check_msg,use_count,sort_id  FROM t_tk_question_info WHERE b_delete=0 and question_id_char = "..quote(question_id_char).."  and group_id=2 and check_status = 2";
 
+			local qryOldZsdSql = "select t1.id,t1.structure_id_int,t1.json_question,t2.structure_name,t1.check_status,t1.group_id from t_tk_question_info t1 left join t_resource_structure t2 on t1.structure_id_int=t2.structure_id and t2.type_id=2 where t1.question_id_char="..quote(question_id_char).." and t1.b_delete=0 and  t1.group_id in (1,2) and t1.check_status <>3 ";
+
+			local resultOldZsd = db:query(qryOldZsdSql);
+
+			if not resultOldZsd then
+				return false;
+			end
+
+			local strucStr = "";
+
+			for i=1, #resultOldZsd do
+
+				if tostring(resultOldZsd[i]["structure_name"]) ~=  "userdata: NULL" then
+
+					if tonumber(resultOldZsd[i]["group_id"]) == 1 or tonumber(resultOldZsd[i]["check_status"]) == 2 then
+						if strucStr == "" then
+							strucStr   	=  resultOldZsd[i]["structure_name"];
+						else
+							if (string.find(","..strucStr..",",","..resultOldZsd[i]["structure_name"]..",")==nil) then
+									strucStr   	=  strucStr .. "," .. resultOldZsd[i]["structure_name"];
+							end
+						end
+					end
+				end
+				
+			end
+
+
+			for s=1, #resultOldZsd do
+
+				if tonumber(resultOldZsd[s]["group_id"]) == 1 then
+					local temId = resultOldZsd[s]["id"];
+					local json_question		= resultOldZsd[s]["json_question"];
+					local json_question_table					= cjson.decode(ngx.decode_base64(json_question));
+					json_question_table.zsd	= strucStr;
+					local json_question_new 			= ngx.encode_base64(cjson.encode(json_question_table));
+					local updateStSql = "update t_tk_question_info set json_question="..quote(json_question_new).. ", update_ts="..currentTS.." where id="..temId;
+
+					local updateResult = db:query(updateStSql);
+
+					if not updateResult then
+						return false;
+					end
+
+					cache:hmset("question_"..temId,"json_question",json_question_new);
+				end
+			end
+
+			local sql = "SELECT id,question_id_char,question_title ,question_tips,question_type_id,question_difficult_id,create_person,group_id,down_count,ts,kg_zg,scheme_id_int,structure_id_int,json_question,json_answer,update_ts,structure_path,b_in_paper ,paper_id_int,b_delete,oper_type,check_status,check_msg,use_count,sort_id  FROM t_tk_question_info WHERE b_delete=0 and question_id_char = "..quote(question_id_char).."  and group_id=2 and check_status = 2";
 
 			local res, err, errno, sqlstate = db:query(sql);
 
@@ -236,6 +281,7 @@ local function examineQuestion(question_id_table,check_type)
 				local question_type_id			= res[i]["question_type_id"];
 				local question_difficult_id		= res[i]["question_difficult_id"];
 				local create_person				= 1;
+				local create_person_tem			= res[i]["create_person"];
 				local group_id					= 1;
 				local down_count				= res[i]["down_count"];
 				if tostring(down_count)=="userdata: NULL" then
@@ -261,6 +307,7 @@ local function examineQuestion(question_id_table,check_type)
 				local json_question				= res[i]["json_question"];
 				json_question_table				= cjson.decode(ngx.decode_base64(json_question));
 				json_question_table.t_title 	= "东师理想提供";
+				json_question_table.zsd 		= strucStr;
 				local json_question_new 			= ngx.encode_base64(cjson.encode(json_question_table));
 
 				local questionModel = require "management.question.model.QuestionModel";
@@ -279,8 +326,7 @@ local function examineQuestion(question_id_table,check_type)
 
 				cache:hmset("question_"..question_tem_id,"scheme_id_int",cheme_id_int,"json_question",json_question_new,"create_person",create_person,"question_id_char",question_id_char,"sort_id",sort_id,"json_answer",json_answer,"down_count",down_count,"b_delete",b_delete);
 
-				local result = ssdb:hset(question_id_char.."_"..structure_id_int,"check_status",1);
-
+				local result = ssdb:hset(create_person_tem.."_5_"..question_id_char.."_"..structure_id_int,"check_status",1);
 
 			end
 		end
@@ -513,10 +559,10 @@ local function delQuestion(question_id_char,structure_ids_table)
 	local strucName = "";
 
 	for i=1, #resultZsd do
-		if strucName == "" or i == #resultZsd then
+		if strucName == "" then
 			strucName   	=  resultZsd[i]["structure_name"];
 		else
-			strucName   	= strucName .. "，" .. resultZsd[i]["structure_name"];
+			strucName   	= strucName .. "," .. resultZsd[i]["structure_name"];
 		end
 	end
 
@@ -549,6 +595,7 @@ local function delQuestion(question_id_char,structure_ids_table)
 
 
 	DBUtil: keepDbAlive(db);
+	CacheUtil:keepConnAlive(cache);
 
 	return true;
 

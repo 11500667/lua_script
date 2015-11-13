@@ -78,8 +78,8 @@ if args["param_json"] == nil or args["param_json"]=="" then
 end
 ngx.log(ngx.ERR, "===> args[\"param_json\"] ===> ", args["param_json"]);
 local paramJsonStr = args["param_json"];
-local paramDecode  = ngx.decode_base64(paramJsonStr);
-ngx.log(ngx.ERR, "====> gizped stream ===> ", paramDecode);
+--local paramDecode  = ngx.decode_base64(paramJsonStr);
+--ngx.log(ngx.ERR, "====> gizped stream ===> ", paramDecode);
 --ngx.print(paramJsonStr);
 -- 将参数转换成table对象
 local paramJson = cjson.decode(paramJsonStr);
@@ -158,55 +158,82 @@ for i=1, #quesList do
 	local quesIdChar = quesJson.question_id_char;
 	local zsdStr     = quesJson.zsd_id_chars;
 	local contentMd5     = quesJson.content_md5;
-	local newContentMd5     = quesJson.content_md5_new_unique;
 	local existIdChar    = "";
 	local isStrucRepeat  = false;
 	local repeatStrucStr = "";
-
-
-	ngx.log(ngx.ERR, "===> quesJson ===> "..cjson.encode(quesJson));
-
 	
 	-- 判断文件是否存在
-	local existResult = ssdb:hexists("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId);
+	local existResult = ssdb:hexists("md5_ques_" .. contentMd5, "file_id");
 	ngx.log(ngx.ERR, "===> existResult ===> ", type(existResult), " ===> ", cjson.encode(existResult));
-	local isQuestionExist = existResult[1]; -- 返回值类型为table，["0"]或["1"]
+	local isFileExist = existResult[1]; -- 返回值类型为table，["0"]或["1"]
 	
 	
-	if isQuestionExist == "1" then -- 如果用户上传过此试题
+	if isFileExist == "1" then -- 如果文件已经存在
+		-- 获取试题的file_id,如果ssdb中存在，则重用
+		local fileIdTab = ssdb:hget("md5_ques_"..contentMd5, "file_id");
+		local fileId    = fileIdTab[1];
 
-		quesIdChar = ssdb:hexists("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId.."_question_id_char");
+		-- 判断此用户是否已经上传过此试题
+		local quesExistTab = ssdb:hexists("md5_ques_" .. contentMd5, personId .. "_" .. identityId);
+		ngx.log(ngx.ERR, "===> quesExistTab ===> ", type(quesExistTab), " ===> ", cjson.encode(quesExistTab));
+		local isQuesExist = quesExistTab[1]; -- 返回值类型为table，["0"]或["1"]
+		
+		local sql = "SELECT QUESTION_ID_CHAR, QUESTION_TITLE, JSON_ANSWER, JSON_QUESTION, FILE_ID  FROM T_TK_QUESTION_BASE WHERE CONTENT_MD5=" .. ngx.quote_sql_str(contentMd5) .. " LIMIT 1";
+		local queryResult = DBUtil: querySingleSql(sql);
 
-		local isQuesStrucExistTab = ssdb:hexists(personId .. "_" .. identityId.."_"..quesIdChar.."_"..strucId,"is_struc_repeat");
-
-		if isQuesStrucExistTab[1] == "1" then
-			isStrucRepeat = true;
+		if (queryResult ~= nil and queryResult ~= ngx.null and #queryResult ~= 0) then
+			local quesBaseTable = {};
+			quesBaseTable["question_id_cahr"] = queryResult[1]["QUESTION_ID_CHAR"];
+			quesBaseTable["question_title"]   = queryResult[1]["QUESTION_TITLE"];
+			quesBaseTable["json_question"]    = queryResult[1]["JSON_QUESTION"];
+			quesBaseTable["json_answer"]      = queryResult[1]["JSON_ANSWER"];
+			quesBaseTable["file_id"]      	  = fileId;
+			local result = SSDBUtil:multi_hset("md5_ques_base_" .. contentMd5, quesBaseTable);
 		end
 
-
+		if isQuesExist == "1" then 
+			local orginalIdCharTab = ssdb:hget("md5_ques_"..contentMd5, personId .. "_" .. identityId);
+			existIdChar  = orginalIdCharTab[1];
+			-- existIdChar  = cache:hget("question_"..orginalInfoId, "question_id_char");
+		end
+		
+		-- 判断试题在章节目录下是否重复
+		local hashKey 	= personId .. "_" .. identityId .. "_" .. strucId;
+		ngx.log(ngx.ERR, "===> hashKey ===> ", personId .. "_" .. identityId .. "_" .. strucId);
+		local isQuesStrucExistTab = ssdb:hexists("md5_ques_"..contentMd5, hashKey);
+		local isQuesStrucExist    = isQuesStrucExistTab[1];
+		
+		if isQuesStrucExist == "1" then -- 判断试题在章节目录下是否重复
+			-- local orginalInfoId = ssdb:hget("md5_ques_"..contentMd5, hashKey);
+			-- existIdChar   = cache:hget("question_"..orginalInfoId, "question_id_char");
+			isStrucRepeat = true;	
+		end
+		
 		-- 判断试题在知识点下是否重复
 		local zsdList = Split(zsdStr, ","); -- 获取试题所在的知识点
 		-- 循环试题的知识点，判断其在知识点下是否重复
 		for j=1, #zsdList do
 			local zsdId = zsdList[j]
-			isQuesStrucExistTab = ssdb:hexists(personId .. "_" .. identityId.."_"..quesIdChar.."_"..strucId,"is_struc_repeat");
-
-			if isQuesStrucExistTab[1] == "1" then
+			hashKey 	= personId .. "_" .. identityId .. "_" .. zsdId;
+			isQuesStrucExistTab = ssdb:hexists("md5_ques_"..contentMd5, hashKey);
+			isQuesStrucExist    = isQuesStrucExistTab[1];
+			
+			if isQuesStrucExist == "1" then
 				repeatStrucStr = repeatStrucStr .. "," .. zsdId;
 			end
 		
 		end
 		
 		resultJson.question_id_char = quesIdChar;
-		resultJson.file_exist       = 0;
-		resultJson.is_ques_exist	= 1;
+		resultJson.file_exist       = 1;
+		resultJson.is_ques_exist	= (isQuesExist == "1" and 1) or 0;
 		resultJson.is_struc_repeat  = (isStrucRepeat and 1) or 0;
 		if string.len(repeatStrucStr) > 1 then 
 			resultJson.repeat_structure = string.sub(repeatStrucStr, 2, -1);
 		else
 			resultJson.repeat_structure = repeatStrucStr;
 		end		
-		resultJson.file_id = "";
+		resultJson.file_id = fileId;
 		resultJson.exist_ques_id_char = existIdChar;
 		
 	else  -- 如果文件不存在

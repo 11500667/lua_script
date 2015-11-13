@@ -59,7 +59,7 @@ if not ok then
 end
 
 
-local sql_queryStruc = "SELECT ID, STRUCTURE_ID_INT, STRUCTURE_PATH FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR='" .. p_question_id_char .. "' AND B_DELETE=0 AND B_IN_PAPER=0 AND OPER_TYPE=1 GROUP BY STRUCTURE_ID_INT"
+local sql_queryStruc = "SELECT ID, STRUCTURE_ID_INT, STRUCTURE_PATH FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR='" .. p_question_id_char .. "' AND B_DELETE=0 AND B_IN_PAPER=0 AND OPER_TYPE=1 AND CREATE_PERSON="..cookie_person_id.." GROUP BY STRUCTURE_ID_INT"
 
 local results, err, errno, sqlstate = db:query(sql_queryStruc);
 
