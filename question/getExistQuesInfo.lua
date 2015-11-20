@@ -22,14 +22,14 @@ elseif args["identity_id"] == nil or args["identity_id"]=="" then
 elseif args["structure_id"] == nil or args["structure_id"]=="" then
 	ngx.print("{\"success\":\"false\",\"info\":\"参数structure_id不能为空！\"}");
 	return;
-elseif args["content_md5"] == nil or args["content_md5"]=="" then
-	ngx.print("{\"success\":\"false\",\"info\":\"参数content_md5不能为空！\"}");
+elseif args["content_md5_new_unique"] == nil or args["content_md5_new_unique"]=="" then
+	ngx.print("{\"success\":\"false\",\"info\":\"参数content_md5_new_unique不能为空！\"}");
 	return;
 end
 
 
 local structureId = tostring(args["structure_id"]);
-local contentMd5  = tostring(args["content_md5"]);
+local newContentMd5  = tostring(args["content_md5_new_unique"]);
 
 local personId 	  = tostring(args["person_id"]);
 local identityId  = tostring(args["identity_id"]);
@@ -96,16 +96,16 @@ end
 -- 获取mysql连接 end
 
 local hashKey = personId.."_" .. identityId;
-local exist, err = ssdb:hexists("md5_ques_" .. contentMd5, hashKey);
+local exist, err = ssdb:hexists("new_md5_ques_" .. newContentMd5, hashKey);
 ngx.log(ngx.ERR, "=== exist ==>", type(exist[1]), ", value: ", cjson.encode(exist));
 
 if exist[1] == "0" then 
-	ngx.log(ngx.ERR, "ssdb中key为[md5_ques_" .. contentMd5.."], hash-key为 ["..hashKey.."] 的记录不存在！\"}");
-	ngx.print("{\"success\":\"false\",\"info\":\"ssdb中key为[md5_ques_" .. contentMd5.."], hash-key为 ["..hashKey.."]的记录不存在！\"}")
+	ngx.log(ngx.ERR, "ssdb中key为[new_md5_ques_" .. newContentMd5.."], hash-key为 ["..hashKey.."] 的记录不存在！\"}");
+	ngx.print("{\"success\":\"false\",\"info\":\"ssdb中key为[new_md5_ques_" .. newContentMd5.."], hash-key为 ["..hashKey.."]的记录不存在！\"}")
 	ngx.exit(ngx.HTTP_OK);
 end
 
-local quesIdCharTab, err = ssdb:hget("md5_ques_" .. contentMd5, hashKey);
+local quesIdCharTab, err = ssdb:hget("new_md5_ques_" .. newContentMd5, hashKey);
 ngx.log(ngx.ERR, "=== quesIdCharTab ==>", type(quesIdCharTab), ", ", cjson.encode(quesIdCharTab));
 local quesIdChar = quesIdCharTab[1];
 

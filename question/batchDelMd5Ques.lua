@@ -44,28 +44,19 @@ local paramJson = cjson.decode(paramJsonStr);
 local syncList  = paramJson.del_list;
 ngx.log(ngx.ERR, "===> syncList ===> ", type(syncList));
 
--- 获取SSDB连接
-local ssdblib = require "resty.ssdb";
-local ssdb    = ssdblib:new()
-local ok, err = ssdb:connect(v_ssdb_ip, v_ssdb_port)
-if not ok then
-    ngx.print("{\"success\":false,\"info\":\"获取ssdb连接失败！\"}")
-	ngx.log(ngx.ERR, "===> batchSaveMd5Ques 获取ssdb连接失败！错误信息：===> ", err);
-    ngx.exit(ngx.HTTP_OK);
-end
+local SSDBUtil = require "common.SSDBUtil";
+local ssdb = SSDBUtil:getDb;
+
 
 ssdb:init_pipeline();
 --循环获取参数
+
+
+ngx.log(ngx.ERR,"0000===================>"..#syncList);
 for i=1, #syncList do
-	local ssdbKey  = syncList[i].ssdb_key;
-	local hashList = syncList[i].hash_keys;	
-	-- local kvArray  = {};
-	
-	-- for j=1, #hashList do
-		-- local hashKey    = hashList[j];
-		-- kvArray[j] = hashValue		
-	-- end
-	
+	local ssdbKey  = syncList[i];
+	local hashList = "is_struc_repeat";
+	ngx.log(ngx.ERR,"===================>"..ssdbKey);
 	local result, err = ssdb:multi_hdel(ssdbKey, unpack(hashList));
 	ngx.log(ngx.ERR, "===> ssdbKey:", ssdbKey, " ===> result: ", cjson.encode(result));
 	

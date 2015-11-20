@@ -111,18 +111,11 @@ if isDsidealPerson then
 	identityId = "2";
 end
 
--- 获取ssdb连接
-local ssdblib = require "resty.ssdb"
-local ssdb = ssdblib:new()
-local ok, err = ssdb:connect(v_ssdb_ip, v_ssdb_port)
-if not ok then
-    ngx.print("{\"success\":false,\"info\":\"判断重复过程出错！\"}")
-    ngx.log(ngx.ERR, "===> 获取ssdb连接出错 ===> ", err)
-    return
-end
 
 local DBUtil   = require "common.DBUtil";
-local SSDBUtil = require "multi_check.model.SSDBUtil";
+local SSDBUtil = require "common.SSDBUtil";
+
+local ssdb = SSDBUtil:getDb();
 
 -- 解析json对象
 local strucId = paramJson.structure_id;
@@ -163,26 +156,24 @@ for i=1, #quesList do
 	local isStrucRepeat  = false;
 	local repeatStrucStr = "";
 
-
-	ngx.log(ngx.ERR, "===> quesJson ===> "..cjson.encode(quesJson));
-
-	
 	-- 判断文件是否存在
 	local existResult = ssdb:hexists("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId);
 	ngx.log(ngx.ERR, "===> existResult ===> ", type(existResult), " ===> ", cjson.encode(existResult));
 	local isQuestionExist = existResult[1]; -- 返回值类型为table，["0"]或["1"]
-	
-	
+
+
+	ngx.log(ngx.ERR, "===>isQuestionExist===> ", isQuestionExist);
+
 	if isQuestionExist == "1" then -- 如果用户上传过此试题
 
-		quesIdChar = ssdb:hexists("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId.."_question_id_char");
+		local quesIdCharTable = ssdb:hget("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId);
+		local quesIdCharOld = quesIdCharTable[1];
 
-		local isQuesStrucExistTab = ssdb:hexists(personId .. "_" .. identityId.."_"..quesIdChar.."_"..strucId,"is_struc_repeat");
+		local isQuesStrucExistTab = ssdb:hexists(personId .. "_" .. identityId.."_"..quesIdCharOld.."_"..strucId,"is_struc_repeat");
 
 		if isQuesStrucExistTab[1] == "1" then
 			isStrucRepeat = true;
 		end
-
 
 		-- 判断试题在知识点下是否重复
 		local zsdList = Split(zsdStr, ","); -- 获取试题所在的知识点
@@ -198,7 +189,7 @@ for i=1, #quesList do
 		end
 		
 		resultJson.question_id_char = quesIdChar;
-		resultJson.file_exist       = 0;
+		resultJson.file_exist       = 1;
 		resultJson.is_ques_exist	= 1;
 		resultJson.is_struc_repeat  = (isStrucRepeat and 1) or 0;
 		if string.len(repeatStrucStr) > 1 then 
@@ -206,10 +197,11 @@ for i=1, #quesList do
 		else
 			resultJson.repeat_structure = repeatStrucStr;
 		end		
-		resultJson.file_id = "";
-		resultJson.exist_ques_id_char = existIdChar;
-		
+		resultJson.file_id = quesIdChar;
+		resultJson.exist_ques_id_char = quesIdCharOld;
+
 	else  -- 如果文件不存在
+
 		resultJson.question_id_char   = quesIdChar;
 		resultJson.file_exist 		  = 0;
 		resultJson.is_ques_exist	  = 0;
@@ -218,7 +210,7 @@ for i=1, #quesList do
 		resultJson.file_id 			  = "";
 		resultJson.exist_ques_id_char = "";
 	end
-	
+
 	table.insert(resultQuesList, resultJson);
 
 end
@@ -237,4 +229,4 @@ if not ok then
 end
 
 -- 将SSDB连接归还连接池
-ssdb:set_keepalive(0,v_pool_size)
+SSDBUtil:keepAlive();

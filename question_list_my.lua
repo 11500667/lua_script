@@ -259,7 +259,10 @@ else
    str_delete = "0";
 end
 
-local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_my_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype..bType_str..person_str..str_group.."filter=b_delete,"..str_delete..";groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
+local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_my_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype..bType_str..person_str..str_group.."filter=b_delete,"..str_delete..";groupsort=ts desc;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
+
+ngx.log(ngx.ERR,"----------------->SELECT SQL_NO_CACHE id FROM t_tk_question_my_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype..bType_str..person_str..str_group.."filter=b_delete,"..str_delete..";groupsort=ts desc;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;<----------------")
+
 
 
 --去第二个结果集中的Status中截取总个数
@@ -350,7 +353,7 @@ for i=1,#res do
 			return
         end
 
-
+        
         local result = ssdb:hget(cookie_person_id.."_"..cookie_identity_id.."_"..question_id_char.."_"..structure_id_int,"check_status");
 		
 
