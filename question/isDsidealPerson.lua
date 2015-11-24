@@ -36,7 +36,28 @@ if not ok then
 end
 
 -- 东师理想学科人员所在的部门（普通教师）,多个部门之间用逗号间隔
-local v_dsideal_person_orgs = "200113395";
+local resultJson = "";
+
+local captureResponse = ngx.location.capture("/dsideal_yy/golbal/getValueByKey", {
+	method = ngx.HTTP_POST,
+	body = "key=ybk.dsideal.org"
+});
+
+
+--东师理想试题学科人员所在的部门ID：2005232
+local dsideal_orgId = "";
+if captureResponse.status == ngx.HTTP_OK then
+	resultJson = cjson.decode(captureResponse.body);
+	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
+	dsideal_orgId = resultJson["ybk.dsideal.org"];
+else
+	ngx.print("{\"success\":false,\"info\":\"查询东师理想试题学科人员所在的部门ID失败！\"}")
+	return
+end
+
+local v_dsideal_person_orgs = dsideal_orgId;
+
+
 
 local isDsidealPerson = false;
 
