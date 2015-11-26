@@ -5,6 +5,10 @@
 ]]
 local request_method = ngx.var.request_method
 local args = nil
+
+local quote = ngx.quote_sql_str;
+
+
 if "GET" == request_method then
     args = ngx.req.get_uri_args()
 else
@@ -108,21 +112,22 @@ local districtId = person_map[3];
 local schoolId   = person_map[4];
 local update_ts =  myts.getTs();
 if del_type == "1" then
+
 	--全部删除试题
-	--ngx.log(ngx.ERR,"-----------------全部删除");
 	local sql = "SELECT ID, STRUCTURE_ID_INT FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR='"..question_id_char.."' "..
-                        "AND GROUP_ID NOT IN("..provinceId..","..cityId..","..districtId..","..schoolId..") AND B_IN_PAPER=0 AND B_DELETE="..b_delete_check.." And CREATE_PERSON="..person_id;
-						
+                        "AND GROUP_ID NOT IN("..provinceId..","..cityId..","..districtId..","..schoolId..") AND B_IN_PAPER=0 AND B_DELETE="..b_delete_check.." And CREATE_PERSON="..person_id .." and STRUCTURE_ID_INT="..structure_ids;
+
 	local infoRecordList = db:query(sql);
 
 	for i=1,#infoRecordList do
 		  sql = "UPDATE T_TK_QUESTION_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts.." WHERE ID="..infoRecordList[i]["ID"];
 		  db:query(sql);
 		  cache:hset("question_"..infoRecordList[i]["ID"],"b_delete",b_delete);
+
+
 		  if delete_status == "1" then
 			  local ssdbKey  = person_id.."_"..identity_id.."_"..question_id_char.."_"..infoRecordList[i]["STRUCTURE_ID_INT"];
 			  local hashKey = "is_struc_repeat";
-			--  ngx.log(ngx.ERR,"===================>"..ssdbKey);
 			  local result, err = ssdb:multi_hdel(ssdbKey, hashKey);
 		  end
 	end
@@ -131,8 +136,8 @@ if del_type == "1" then
 	local sql_sel_myinfo = "SELECT ID, QUESTION_ID_CHAR, QUESTION_ID_INT_BAK_DEL, QUESTION_TITLE, "..
 							"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 							"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT,  "..
-							"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR= '"..question_id_char.."'";
-	
+							"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR= "..quote(question_id_char).." and STRUCTURE_ID_INT="..structure_ids;
+
 	local myInfoRecordList = db:query(sql_sel_myinfo);
 	for h=1,#myInfoRecordList do
 	    --删除我的试题中的数据
@@ -142,10 +147,11 @@ if del_type == "1" then
 		cache:hset("myquestion_"..myInfoRecordList[h]["ID"],"type_id",type_id)
 	end
 
+
 	--获取删除试题信息后的知识点
 	local zsd_sql = "SELECT T1.STRUCTURE_ID_INT, T2.STRUCTURE_NAME as STRUCTURE_NAME  FROM T_TK_QUESTION_INFO T1 "..
                 " INNER JOIN T_RESOURCE_STRUCTURE T2 ON T1.STRUCTURE_ID_INT=T2.STRUCTURE_ID AND T2.TYPE_ID=2"..
-                " WHERE T1.QUESTION_ID_CHAR='"..question_id_char.."' AND T1.B_DELETE="..b_delete_check.." AND T1.B_IN_PAPER=0 GROUP BY T1.STRUCTURE_ID_INT";
+                " WHERE T1.QUESTION_ID_CHAR="..quote(question_id_char).." AND T1.B_DELETE="..b_delete_check.." AND T1.B_IN_PAPER=0 GROUP BY T1.STRUCTURE_ID_INT";
 	
 	local zsd_list = db:query(zsd_sql);
 	local zsdStr="";
@@ -161,7 +167,7 @@ if del_type == "1" then
 	local sql_info = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, "..
                 "QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, "..
                 "JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, DOWN_COUNT, CHECK_STATUS, "..
-                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = '"..question_id_char.."' and b_delete = "..b_delete_check;
+                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = "..quote(question_id_char).." and b_delete = "..b_delete_check;
 	
 	local quesToUpdate = db:query(sql_info);
 	
@@ -170,9 +176,8 @@ if del_type == "1" then
 		  --quesJson.put("zsd", zsdStr);
 		  quesJson.zsd = zsdStr;
 		  local newJsonQues = ngx.encode_base64(cjson.encode(quesJson));
-		 -- ngx.log(ngx.ERR,"newJsonQues==============="..newJsonQues);
-		  
-		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION='"..newJsonQues.."', UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
+
+		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
 		  db:query(up_info_json);
 		  --更新缓存
 		  cache:hset("question_"..quesToUpdate[m]["ID"],"json_question",quesToUpdate[m]["JSON_QUESTION"])
@@ -182,16 +187,15 @@ if del_type == "1" then
 	local sql_my_info = "SELECT ID, QUESTION_ID_CHAR, QUESTION_ID_INT_BAK_DEL, QUESTION_TITLE, "..
 						"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 						"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT, "..
-						"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR='"..question_id_char.."'";
+						"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR="..quote(question_id_char);
 	local myQuesToUpdate = db:query(sql_my_info);
 	for n=1,#myQuesToUpdate do
 		 local quesJson = cjson.decode(ngx.decode_base64(myQuesToUpdate[n]["JSON_QUESTION"]));
 		 -- quesJson.put("zsd", zsdStr);
 		  quesJson.zsd = zsdStr;
 		  local newJsonQues = ngx.encode_base64(cjson.encode(quesJson));
-		  ngx.log(ngx.ERR,"newJsonQues==============="..newJsonQues);
-		  
-		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION='"..newJsonQues.."', UPDATE_TS="..update_ts.." TYPE_ID = "..type_id.." WHERE ID="..myQuesToUpdate[n]["ID"];
+
+		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." TYPE_ID = "..type_id.." WHERE ID="..myQuesToUpdate[n]["ID"];
 		  db:query(up_info_json);
 		  --更新缓存
 		  cache:hset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",myQuesToUpdate[n]["JSON_QUESTION"])
@@ -209,10 +213,9 @@ else
 
 	 for i=1,#strucIdArray do
 	 
-		 local sql = "SELECT ID, STRUCTURE_ID_INT FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR='"..question_id_char.."' AND STRUCTURE_ID_INT="..strucIdArray[i]..
+		 local sql = "SELECT ID, STRUCTURE_ID_INT FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR="..quote(question_id_char).." AND STRUCTURE_ID_INT="..strucIdArray[i]..
                             " AND GROUP_ID NOT IN("..provinceId..","..cityId..","..districtId..","..schoolId..") AND B_IN_PAPER=0 AND B_DELETE= "..b_delete_check.." And CREATE_PERSON="..person_id;
 
-		--ngx.log(ngx.ERR,"================================"..sql.."=============================")
 		 local delQuesList = db:query(sql);
 			 for j=1,#delQuesList do
 				sql = "UPDATE T_TK_QUESTION_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts.." WHERE ID="..delQuesList[j]["ID"];
@@ -222,7 +225,6 @@ else
 				if delete_status == "1" then
 					local ssdbKey  = person_id.."_"..identity_id.."_"..question_id_char.."_"..delQuesList[j]["STRUCTURE_ID_INT"];
 					local hashKey = "is_struc_repeat";
-					ngx.log(ngx.ERR,"===================>"..ssdbKey);
 					local result, err = ssdb:multi_hdel(ssdbKey, hashKey);
 				end
 			 end
@@ -230,7 +232,7 @@ else
 		 local sql_my = "SELECT ID, QUESTION_ID_CHAR, QUESTION_ID_INT_BAK_DEL, QUESTION_TITLE, "..
 				"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 				"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT,  "..
-				"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR = '"..question_id_char.."' and STRUCTURE_ID_INT ="..strucIdArray[i];
+				"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR = "..quote(question_id_char).." and STRUCTURE_ID_INT ="..strucIdArray[i];
 		local delMyQuesList = db:query(sql_my);
 			for k=1,#delMyQuesList do
 			   sql = "UPDATE T_TK_QUESTION_MY_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts..",TYPE_ID = "..type_id.." WHERE ID ="..delMyQuesList[k]["ID"];
@@ -246,7 +248,7 @@ else
 	local sql_info = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, "..
                 "QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, "..
                 "JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, DOWN_COUNT, CHECK_STATUS, "..
-                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = '"..question_id_char.."' and b_delete = "..b_delete_check;
+                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = "..quote(question_id_char).." and b_delete = "..b_delete_check;
 	
 	ngx.log(ngx.ERR,"***************************"..sql_info.."**************************")
 	local quesToUpdate = db:query(sql_info);
@@ -256,9 +258,8 @@ else
 		 -- quesJson.put("zsd", zsdStr);
 		  quesJson.zsd = zsdStr;
 		  local newJsonQues = ngx.encode_base64(cjson.encode(quesJson));
-		  --ngx.log(ngx.ERR,"newJsonQues==============="..newJsonQues);
-		  
-		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION='"..newJsonQues.."', UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
+
+		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
 		  db:query(up_info_json);
 		  --修改缓存
 		  cache:hset("question_"..quesToUpdate[m]["ID"],"json_question",quesToUpdate[m]["JSON_QUESTION"])
@@ -268,7 +269,7 @@ else
 	local sql_my_info = "SELECT ID, QUESTION_ID_CHAR, QUESTION_ID_INT_BAK_DEL, QUESTION_TITLE, "..
 						"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 						"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT, "..
-						"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR='"..question_id_char.."'";
+						"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR="..quote(question_id_char);
 
 	local myQuesToUpdate = db:query(sql_my_info);
 	for n=1,#myQuesToUpdate do
@@ -276,7 +277,7 @@ else
 		  quesJson.zsd = zsdStr;
 		--  quesJson.put("zsd", zsdStr);
 		  local newJsonQues = ngx.encode_base64(cjson.encode(quesJson));
-		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION='"..newJsonQues.."', UPDATE_TS="..update_ts.." WHERE ID="..myQuesToUpdate[n]["ID"];
+		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..myQuesToUpdate[n]["ID"];
 		  db:query(up_info_json);
 		  cache:hset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",myQuesToUpdate[n]["JSON_QUESTION"]);
 	end

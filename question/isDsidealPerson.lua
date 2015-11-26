@@ -40,23 +40,27 @@ local resultJson = "";
 
 local captureResponse = ngx.location.capture("/dsideal_yy/golbal/getValueByKey", {
 	method = ngx.HTTP_POST,
-	body = "key=ybk.dsideal.org"
+	body = "key=ybk.dsideal.org";
 });
 
 
 --东师理想试题学科人员所在的部门ID：2005232
-local dsideal_orgId = "";
-if captureResponse.status == ngx.HTTP_OK then
-	resultJson = cjson.decode(captureResponse.body);
-	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
-	dsideal_orgId = resultJson["ybk.dsideal.org"];
-else
-	ngx.print("{\"success\":false,\"info\":\"查询东师理想试题学科人员所在的部门ID失败！\"}")
-	return
-end
+--local dsideal_orgId = "2005232";
+--if captureResponse.status == ngx.HTTP_OK then
+--	resultJson = cjson.decode(captureResponse.body);
+--	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
+--	if resultJson["ybk.dsideal.org"] ~= nil then
+--		dsideal_orgId = resultJson["ybk.dsideal.org"];
+--	end
+--else
+--	ngx.print("{\"success\":false,\"info\":\"查询东师理想试题学科人员所在的部门ID失败！\"}")
+--	return
+--end
+--
+--local v_dsideal_person_orgs = dsideal_orgId;
 
-local v_dsideal_person_orgs = dsideal_orgId;
 
+local v_dsideal_person_orgs = "2005485";
 
 
 local isDsidealPerson = false;

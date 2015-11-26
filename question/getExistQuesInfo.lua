@@ -69,31 +69,8 @@ if not ok then
 end
 -- 获取SSDB连接 end
 
+local DBUtil = require "common.DBUtil";
 
--- 获取mysql连接 begin
-local mysql = require "resty.mysql";
-local db, err = mysql : new();
-if not db then 
-	ngx.log(ngx.ERR, err);
-	return;
-end
-
-db:set_timeout(1000) -- 1 sec
-
-local ok, err, errno, sqlstate = db:connect{
-    host = v_mysql_ip,
-    port = v_mysql_port,
-    database = v_mysql_database,
-    user = v_mysql_user,
-    password = v_mysql_password,
-    max_packet_size = 1024 * 1024 }
-
-if not ok then
-    ngx.print("{\"success\":\"false\",\"info\":\"查询数据失败！\"}")
-	ngx.log(ngx.ERR, "=====> 连接数据库失败!");
-    return
-end
--- 获取mysql连接 end
 
 local hashKey = personId.."_" .. identityId;
 local exist, err = ssdb:hexists("new_md5_ques_" .. newContentMd5, hashKey);
@@ -109,11 +86,12 @@ local quesIdCharTab, err = ssdb:hget("new_md5_ques_" .. newContentMd5, hashKey);
 ngx.log(ngx.ERR, "=== quesIdCharTab ==>", type(quesIdCharTab), ", ", cjson.encode(quesIdCharTab));
 local quesIdChar = quesIdCharTab[1];
 
-local sql = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, DOWN_COUNT, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, CHECK_STATUS, CHECK_MSG, USE_COUNT, SORT_ID FROM t_tk_question_info WHERE QUESTION_ID_CHAR='".. quesIdChar .. "' AND OPER_TYPE=1 LIMIT 1";
+local sql = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, DOWN_COUNT, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, CHECK_STATUS, CHECK_MSG, USE_COUNT, SORT_ID FROM t_tk_question_info WHERE QUESTION_ID_CHAR='".. quesIdChar .. "' AND OPER_TYPE=1 ORDER BY ID DESC LIMIT 1";
+
+ngx.log(ngx.ERR, "\n\n sql : [", sql, "]");
 
 local infoRecordObj = {}
-
-local resultTab, err, errno, sqlstate = db:query(sql);
+local resultTab, err = DBUtil: querySingleSql(sql);
 ngx.log(ngx.ERR, "=== resultTab ==>", type(resultTab), ", ", cjson.encode(resultTab));
 if resultTab ~= nil and resultTab ~= ngx.null then
 	infoRecordObj.ID                     = resultTab[1]["ID"];
@@ -147,13 +125,12 @@ local resultJson = {};
 resultJson.success     = true;
 resultJson.record_info = infoRecordObj;
 
+ngx.log(ngx.ERR,"infoRecordObj========================"..infoRecordObj.ID);
+
+ngx.log(ngx.ERR,"infoRecordObj========================"..cjson.encode(resultJson));
+
 ngx.print(cjson.encode(resultJson));
 
--- 将mysql连接归还到连接池
-ok, err = db: set_keepalive(0, v_pool_size);
-if not ok then
-	ngx.log(ngx.ERR, "====>将Mysql数据库连接归还连接池出错！");
-end
 
 -- 将SSDB连接归还连接池
 ssdb:set_keepalive(0,v_pool_size)
