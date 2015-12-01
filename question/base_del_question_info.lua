@@ -61,8 +61,6 @@ if version_id ~= nil and version_id ~= "" then
     sql = sql .. " and scheme_id_int = " .. tonumber(version_id);
 end
 
-
-ngx.log(ngx.ERR, "[sj_log] -> [question_ht] -> 查询待删除试题的SQL语句：[", sql, "]");
 local queryResult = DBUtil: querySingleSql(sql);
 if    queryResult ~= nil and queryResult ~= ngx.null and #queryResult ~= 0 then
     for i, record in ipairs(queryResult) do

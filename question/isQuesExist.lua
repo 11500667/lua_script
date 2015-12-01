@@ -39,7 +39,6 @@ local cache = redis:new()
 local ok,err = cache:connect(v_redis_ip,v_redis_port)
 if not ok then
     ngxngx.print("{\"success\":false,\"info\":\"判断重复过程出错！\"}")
-    ngx.log(ngx.ERR, "===> 获取连接出错 ===> ", err)
     return
 end
 
@@ -51,7 +50,6 @@ local encoding = ngx.req.get_headers()["Content-Encoding"]
 -- post参数在接收前首先要执行这个
 ngx.req.read_body();
 
-ngx.log(ngx.ERR, "====> isQuesExist Content-Encoding ===> ", encoding);
 if encoding == "gzip" then
     local body = ngx.req.get_body_data()
 
@@ -76,10 +74,8 @@ if args["param_json"] == nil or args["param_json"]=="" then
 	ngx.print("{\"success\":\"false\",\"info\":\"参数param_json不能为空！\"}");
 	return;
 end
-ngx.log(ngx.ERR, "===> args[\"param_json\"] ===> ", args["param_json"]);
 local paramJsonStr = args["param_json"];
 local paramDecode  = ngx.decode_base64(paramJsonStr);
-ngx.log(ngx.ERR, "====> gizped stream ===> ", paramDecode);
 --ngx.print(paramJsonStr);
 -- 将参数转换成table对象
 local paramJson = cjson.decode(paramJsonStr);
@@ -97,13 +93,11 @@ local captureResponse = ngx.location.capture("/dsideal_yy/ypt/question/isDsideal
 });
 if captureResponse.status == ngx.HTTP_OK then
     resultJson = cjson.decode(captureResponse.body);
-	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
 	isDsidealPerson = resultJson.is_dsideal_person;
 else
 	ngx.print("{\"success\":false,\"info\":\"查询人员信息失败！\"}")
     return
 end
-ngx.log(ngx.ERR, "===> isDsidealPerson ===> ", isDsidealPerson);
 
 -- 如果为东师理想的学科人员，则personId统一为1，因为东师理想的试题在上传时create_person为1
 if isDsidealPerson then
@@ -158,11 +152,7 @@ for i=1, #quesList do
 
 	-- 判断文件是否存在
 	local existResult = ssdb:hexists("new_md5_ques_" .. newContentMd5, personId .. "_" .. identityId);
-	ngx.log(ngx.ERR, "===> existResult ===> ", type(existResult), " ===> ", cjson.encode(existResult));
 	local isQuestionExist = existResult[1]; -- 返回值类型为table，["0"]或["1"]
-
-
-	ngx.log(ngx.ERR, "===>isQuestionExist===> ", isQuestionExist);
 
 	if isQuestionExist == "1" then -- 如果用户上传过此试题
 
@@ -220,13 +210,10 @@ resultObj.success   = true;
 resultObj.ques_list = resultQuesList;
 
 local responseStr = cjson.encode(resultObj);
-ngx.log(ngx.ERR, "===> isQuesExist 返回的值 ===> ", responseStr);
 ngx.print(responseStr);
 
 local ok, err = cache: set_keepalive(0, v_pool_size)
-if not ok then
-	ngx.log(ngx.ERR, "====>将Redis连接归还连接池出错！");
-end
+
 
 -- 将SSDB连接归还连接池
 SSDBUtil:keepAlive();

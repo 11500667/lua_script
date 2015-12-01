@@ -5,7 +5,6 @@ local cookie_identity_id = tostring(ngx.var.cookie_identity_id)
 --判断是否有person_id的cookie信息
 if cookie_person_id == "nil" or cookie_identity_id == "nil" then
     ngx.say("{\"success\":false,\"info\":\"notlogin\"}")
-	ngx.log(ngx.ERR, "Cookie中的人员信息不全！")
     return
 end
 
@@ -37,7 +36,6 @@ local mysql = require "resty.mysql"
 local db, err = mysql : new();
 if not db then 
 	ngx.say("{\"success\":false,\"info\":\"获取数据库连接出错！\"}")
-	ngx.log(ngx.ERR, "获取数据库连接出错，错误信息：" .. err);
 	return;
 end
 
@@ -53,7 +51,6 @@ local ok, err, errno, sqlstate = db:connect{
 }
 
 if not ok then
-    ngx.log(ngx.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
     ngx.say("{\"success\":false,\"info\":\"连接数据库服务器出错！\"}")
     return
 end
@@ -64,7 +61,6 @@ local sql_queryStruc = "SELECT ID, STRUCTURE_ID_INT, STRUCTURE_PATH FROM T_TK_QU
 local results, err, errno, sqlstate = db:query(sql_queryStruc);
 
 if not results then
-    ngx.log(ngx.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ".")
     ngx.say("{\"success\":false,\"info\":\"获取试题的结构信息出错！\"}")
     return
 end 
@@ -98,10 +94,7 @@ ngx.say(resultJsonStr)
 
 -- 将mysql连接归还到连接池
 local ok, err = db:set_keepalive(0, v_pool_size);
-if not ok then
-    ngx.log(ngx.ERR, "failed to set keepalive: ", err)
-    return
-end
+
 
 
 

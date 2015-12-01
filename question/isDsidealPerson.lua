@@ -31,7 +31,6 @@ local cache = redis:new()
 local ok,err = cache:connect(v_redis_ip,v_redis_port)
 if not ok then
 	ngxngx.print("{\"success\":false,\"info\":\"判断重复过程出错！\"}")
-	ngx.log(ngx.ERR, "===> 获取连接出错 ===> ", err)
 	return
 end
 
@@ -45,22 +44,21 @@ local captureResponse = ngx.location.capture("/dsideal_yy/golbal/getValueByKey",
 
 
 --东师理想试题学科人员所在的部门ID：2005232
---local dsideal_orgId = "2005232";
---if captureResponse.status == ngx.HTTP_OK then
---	resultJson = cjson.decode(captureResponse.body);
---	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
---	if resultJson["ybk.dsideal.org"] ~= nil then
---		dsideal_orgId = resultJson["ybk.dsideal.org"];
---	end
---else
---	ngx.print("{\"success\":false,\"info\":\"查询东师理想试题学科人员所在的部门ID失败！\"}")
---	return
---end
---
---local v_dsideal_person_orgs = dsideal_orgId;
+local dsideal_orgId = "2005232";
+if captureResponse.status == ngx.HTTP_OK then
+	resultJson = cjson.decode(captureResponse.body);
+	if resultJson["ybk.dsideal.org"] ~= nil then
+		dsideal_orgId = resultJson["ybk.dsideal.org"];
+	end
+else
+	ngx.print("{\"success\":false,\"info\":\"查询东师理想试题学科人员所在的部门ID失败！\"}")
+	return
+end
+
+local v_dsideal_person_orgs = dsideal_orgId;
 
 
-local v_dsideal_person_orgs = "2005485";
+--local v_dsideal_person_orgs = "2005485";
 
 
 local isDsidealPerson = false;

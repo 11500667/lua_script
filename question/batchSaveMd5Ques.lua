@@ -43,12 +43,10 @@ end
 local paramBase64   = args["param"];
 
 local paramJsonStr  = ngx.decode_base64(paramBase64);
-ngx.log(ngx.ERR, " ===> paramJson base64解码后：===> ", paramJsonStr);
 local cjson = require "cjson";
 local paramJson = cjson.decode(paramJsonStr);
 
 local syncList  = paramJson.save_list;
-ngx.log(ngx.ERR, "===> syncList ===> ", type(syncList));
 
 local cjson   = require "cjson";
 -- 获取SSDB连接
@@ -57,7 +55,6 @@ local ssdb    = ssdblib:new()
 local ok, err = ssdb:connect(v_ssdb_ip, v_ssdb_port)
 if not ok then
     ngx.print("{\"success\":false,\"info\":\"获取ssdb连接失败！\"}")
-	ngx.log(ngx.ERR, "===> batchSaveMd5Ques 获取ssdb连接失败！错误信息：===> ", err);
     ngx.exit(ngx.HTTP_OK);
 end
 
@@ -75,15 +72,13 @@ for i=1, #syncList do
 	end
 	
 	local result, err = ssdb:multi_hset(ssdbKey, kvArray);
-	ngx.log(ngx.ERR, "===> ssdbKey:", ssdbKey, " ===> result: ", cjson.encode(result));
-	
+
 end 
 
 --管道提交
 local results, err = ssdb:commit_pipeline()
 if not results then  
     ngx.print("{\"success\":false,\"info\":\"保存数据失败！\"}");
-	ngx.log(ngx.ERR, "===> batchSaveMd5Ques 保存数据失败！===> ");
     ngx.exit(500);
 end
 

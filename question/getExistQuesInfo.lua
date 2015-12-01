@@ -44,13 +44,11 @@ local captureResponse = ngx.location.capture("/dsideal_yy/ypt/question/isDsideal
 });
 if captureResponse.status == ngx.HTTP_OK then
     resultJson = cjson.decode(captureResponse.body);
-	ngx.log(ngx.ERR, "===> captureResponse.body ===> ", captureResponse.body);
 	isDsidealPerson = resultJson.is_dsideal_person;
 else
 	ngx.print("{\"success\":false,\"info\":\"查询人员信息失败！\"}")
     return
 end
-ngx.log(ngx.ERR, "===> isDsidealPerson ===> ", isDsidealPerson);
 
 -- 如果为东师理想的学科人员，则personId统一为1，因为东师理想的试题在上传时create_person为1
 if isDsidealPerson then
@@ -74,25 +72,20 @@ local DBUtil = require "common.DBUtil";
 
 local hashKey = personId.."_" .. identityId;
 local exist, err = ssdb:hexists("new_md5_ques_" .. newContentMd5, hashKey);
-ngx.log(ngx.ERR, "=== exist ==>", type(exist[1]), ", value: ", cjson.encode(exist));
 
 if exist[1] == "0" then 
-	ngx.log(ngx.ERR, "ssdb中key为[new_md5_ques_" .. newContentMd5.."], hash-key为 ["..hashKey.."] 的记录不存在！\"}");
 	ngx.print("{\"success\":\"false\",\"info\":\"ssdb中key为[new_md5_ques_" .. newContentMd5.."], hash-key为 ["..hashKey.."]的记录不存在！\"}")
 	ngx.exit(ngx.HTTP_OK);
 end
 
 local quesIdCharTab, err = ssdb:hget("new_md5_ques_" .. newContentMd5, hashKey);
-ngx.log(ngx.ERR, "=== quesIdCharTab ==>", type(quesIdCharTab), ", ", cjson.encode(quesIdCharTab));
 local quesIdChar = quesIdCharTab[1];
 
 local sql = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, DOWN_COUNT, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, CHECK_STATUS, CHECK_MSG, USE_COUNT, SORT_ID FROM t_tk_question_info WHERE QUESTION_ID_CHAR='".. quesIdChar .. "' AND OPER_TYPE=1 ORDER BY ID DESC LIMIT 1";
 
-ngx.log(ngx.ERR, "\n\n sql : [", sql, "]");
 
 local infoRecordObj = {}
 local resultTab, err = DBUtil: querySingleSql(sql);
-ngx.log(ngx.ERR, "=== resultTab ==>", type(resultTab), ", ", cjson.encode(resultTab));
 if resultTab ~= nil and resultTab ~= ngx.null then
 	infoRecordObj.ID                     = resultTab[1]["ID"];
 	infoRecordObj.QUESTION_ID_CHAR       = resultTab[1]["QUESTION_ID_CHAR"];
@@ -124,10 +117,6 @@ end
 local resultJson = {};
 resultJson.success     = true;
 resultJson.record_info = infoRecordObj;
-
-ngx.log(ngx.ERR,"infoRecordObj========================"..infoRecordObj.ID);
-
-ngx.log(ngx.ERR,"infoRecordObj========================"..cjson.encode(resultJson));
 
 ngx.print(cjson.encode(resultJson));
 

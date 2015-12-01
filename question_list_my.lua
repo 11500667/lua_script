@@ -261,9 +261,6 @@ end
 
 local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_my_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype..bType_str..person_str..str_group.."filter=b_delete,"..str_delete..";groupsort=ts desc;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
 
-ngx.log(ngx.ERR,"----------------->SELECT SQL_NO_CACHE id FROM t_tk_question_my_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype..bType_str..person_str..str_group.."filter=b_delete,"..str_delete..";groupsort=ts desc;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;<----------------")
-
-
 
 --去第二个结果集中的Status中截取总个数
 local res1 = db:read_result()
@@ -284,7 +281,6 @@ if bType == "7" then
         table.insert(objIdTable, jsonQues["question_id_char"]);
     end
     
-    ngx.log(ngx.ERR, "[sj_log]-> [question_my_list] -> objIdTable : [", cjson.encode(objIdTable), "]");
     local objType = 2;
     if #objIdTable > 0 then
         local checkInfoModel = require "multi_check.model.CheckInfo";
@@ -297,12 +293,10 @@ local cjson         = require "cjson";
 local strucService  = require "base.structure.services.StructureService";
 local question_info = ""
 for i=1,#res do
-    -- ngx.log(ngx.ERR, "====我的试卷===> 序号：", i, " ----> ", res[i]["id"], "<=== 错误的ID ===");
     local question_json = cache:hmget("myquestion_"..res[i]["id"],"id","type_id","table_pk","json_question","group_id","uploader_id")
 
     local jsonQuesObj = cjson.decode(ngx.decode_base64(question_json[4]));
     local strucIdInt  = jsonQuesObj["structure_id"];
-    --ngx.log(ngx.ERR, "[sj_log] -> [question_list] -> strucIdInt ->[", strucIdInt, "]");
     local strucPath   = strucService: getStrucPath(strucIdInt);
     jsonQuesObj["structure_path"] = strucPath;
     local jsonEncodeStr = cjson.encode(jsonQuesObj);
@@ -370,7 +364,6 @@ for i=1,#res do
 
             if chkStatusTable ~= nil then
                 local tempChkStatusStr = chkStatusTable[jsonQues["question_id_char"]];
-                --ngx.log(ngx.ERR, "[sj_log] -> [question_list] -> questionIdChar:[", jsonQues["question_id_char"], "], tempChkStatusStr :[", tempChkStatusStr, "] ");
                 if tempChkStatusStr ~= nil and tempChkStatusStr ~= ngx.null and tempChkStatusStr ~= "" then
                     isMultiCheck = "true";
                     chkStatusStr = tempChkStatusStr;

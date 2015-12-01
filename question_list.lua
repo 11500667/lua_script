@@ -215,7 +215,6 @@ local offset = pageSize*pageNumber-pageSize
 local limit = pageSize
 local str_maxmatches = 100000
 
-ngx.log(ngx.ERR,"###########".."SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype.."filter=b_in_paper,0;filter=b_delete,0;select=("..str_group..") as match_qq;filter= match_qq, 1;groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;".."###############")
 
 local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype.."filter=b_in_paper,0;filter=b_delete,0;select=("..str_group..") as match_qq;filter= match_qq, 1;groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
 
@@ -230,12 +229,10 @@ local cjson         = require "cjson";
 local strucService  = require "base.structure.services.StructureService";
 local question_info = ""
 for i=1,#res do
-    --ngx.log(ngx.ERR, "[errrrr] -> [", res[i]["id"], "]");
     local question_json = tostring(cache:hmget("question_"..res[i]["id"],"json_question")[1])
     if question_json ~= "userdata: NULL" then
         local jsonQuesObj = cjson.decode(ngx.decode_base64(question_json));
         local strucIdInt  = jsonQuesObj["structure_id"];
-        --ngx.log(ngx.ERR, "[sj_log] -> [question_list] -> strucIdInt ->[", strucIdInt, "]");
         local strucPath   = strucService: getStrucPath(strucIdInt);
         jsonQuesObj["structure_path"] = strucPath;
 
