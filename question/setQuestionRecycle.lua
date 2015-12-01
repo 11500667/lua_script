@@ -98,7 +98,6 @@ local function sendAsyncCmd(quesIdChar, delType, strucIdArray)
 	paramObj["structure_ids"]    = strucIdArray;
 	local asyncQueueService = require "common.AsyncDataQueue.AsyncQueueService";
 	local asyncCmdStr       = asyncQueueService: getAsyncCmd("003003", paramObj)
-	ngx.log(ngx.ERR, "[sj_log] -> [supervise] -> asyncCmdStr: [", asyncCmdStr, "]");
 	asyncQueueService: sendAsyncCmd(asyncCmdStr);
 	-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
 end
@@ -113,9 +112,18 @@ local schoolId   = person_map[4];
 local update_ts =  myts.getTs();
 if del_type == "1" then
 
+
+	local strucIdArray = Split(structure_ids,",");
+	local structureStr = "";
+
+	for i=1,#strucIdArray do
+		structureStr = structureStr..strucIdArray[i]..",";
+	end
+	structureStr = string.sub(structureStr,0,#structureStr-1);
+
 	--全部删除试题
 	local sql = "SELECT ID, STRUCTURE_ID_INT FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR='"..question_id_char.."' "..
-                        "AND GROUP_ID NOT IN("..provinceId..","..cityId..","..districtId..","..schoolId..") AND B_IN_PAPER=0 AND B_DELETE="..b_delete_check.." And CREATE_PERSON="..person_id .." and STRUCTURE_ID_INT="..structure_ids;
+                        "AND GROUP_ID NOT IN("..provinceId..","..cityId..","..districtId..","..schoolId..") AND B_IN_PAPER=0 AND B_DELETE="..b_delete_check.." And CREATE_PERSON="..person_id .." and STRUCTURE_ID_INT in ("..structure_ids..")";
 
 	local infoRecordList = db:query(sql);
 
@@ -136,22 +144,22 @@ if del_type == "1" then
 	local sql_sel_myinfo = "SELECT ID, QUESTION_ID_CHAR, QUESTION_ID_INT_BAK_DEL, QUESTION_TITLE, "..
 							"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 							"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT,  "..
-							"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR= "..quote(question_id_char).." and STRUCTURE_ID_INT="..structure_ids;
+							"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR= "..quote(question_id_char).." and STRUCTURE_ID_INT in ("..structureStr..")";
 
 	local myInfoRecordList = db:query(sql_sel_myinfo);
 	for h=1,#myInfoRecordList do
 	    --删除我的试题中的数据
-		local my_sql = "UPDATE T_TK_QUESTION_MY_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts..",TYPE_ID = "..type_id.." WHERE ID ="..myInfoRecordList[h]["ID"]
+		local my_sql = "UPDATE T_TK_QUESTION_MY_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts..",TYPE_ID = "..type_id.." WHERE ID ="..myInfoRecordList[h]["ID"];
 		db:query(my_sql);
-		cache:hset("myquestion_"..myInfoRecordList[h]["ID"],"b_delete",b_delete)
-		cache:hset("myquestion_"..myInfoRecordList[h]["ID"],"type_id",type_id)
+		cache:hmset("myquestion_"..myInfoRecordList[h]["ID"],"b_delete",b_delete);
+		cache:hmset("myquestion_"..myInfoRecordList[h]["ID"],"type_id",type_id);
 	end
 
 
 	--获取删除试题信息后的知识点
 	local zsd_sql = "SELECT T1.STRUCTURE_ID_INT, T2.STRUCTURE_NAME as STRUCTURE_NAME  FROM T_TK_QUESTION_INFO T1 "..
                 " INNER JOIN T_RESOURCE_STRUCTURE T2 ON T1.STRUCTURE_ID_INT=T2.STRUCTURE_ID AND T2.TYPE_ID=2"..
-                " WHERE T1.QUESTION_ID_CHAR="..quote(question_id_char).." AND T1.B_DELETE="..b_delete_check.." AND T1.B_IN_PAPER=0 GROUP BY T1.STRUCTURE_ID_INT";
+                " WHERE T1.QUESTION_ID_CHAR="..quote(question_id_char).." AND T1.B_DELETE=0 AND T1.B_IN_PAPER=0 and t1.create_person = "..person_id.." GROUP BY T1.STRUCTURE_ID_INT";
 	
 	local zsd_list = db:query(zsd_sql);
 	local zsdStr="";
@@ -160,7 +168,7 @@ if del_type == "1" then
 			local strucName = zsd_list[j]["STRUCTURE_NAME"];
 			zsdStr = zsdStr..","..strucName
 		end
-		zsdStr = string.sub(zsdStr,0,#zsdStr-1)
+		zsdStr = string.sub(zsdStr,2,-1);
 	end
 	
 	--更新t_tk_question_info表中未删除的记录的json_question字段中的知识点
@@ -180,7 +188,7 @@ if del_type == "1" then
 		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
 		  db:query(up_info_json);
 		  --更新缓存
-		  cache:hset("question_"..quesToUpdate[m]["ID"],"json_question",quesToUpdate[m]["JSON_QUESTION"])
+		 cache:hmset("question_"..quesToUpdate[m]["ID"],"json_question",newJsonQues)
 	end
 	--更新t_tk_question_my_info表中未删除的记录的json_question字段中的知识点
 	
@@ -198,18 +206,16 @@ if del_type == "1" then
 		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." TYPE_ID = "..type_id.." WHERE ID="..myQuesToUpdate[n]["ID"];
 		  db:query(up_info_json);
 		  --更新缓存
-		  cache:hset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",myQuesToUpdate[n]["JSON_QUESTION"])
-		  cache:hset("myquestion_"..myQuesToUpdate[n]["ID"],"type_id",type_id)
+		 cache:hmset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",newJsonQues)
+		 cache:hmset("myquestion_"..myQuesToUpdate[n]["ID"],"type_id",type_id)
 	end
 	-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
 	sendAsyncCmd(question_id_char, del_type, nil);
 	-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
 
 else
-    ngx.log(ngx.ERR,"-----------------删除指定的");
-	ngx.log(ngx.ERR,"structure_ids-----------------"..structure_ids);
-     local strucIdArray = Split(structure_ids,",");
 
+     local strucIdArray = Split(structure_ids,",");
 
 	 for i=1,#strucIdArray do
 	 
@@ -237,20 +243,34 @@ else
 			for k=1,#delMyQuesList do
 			   sql = "UPDATE T_TK_QUESTION_MY_INFO SET B_DELETE="..b_delete..", UPDATE_TS="..update_ts..",TYPE_ID = "..type_id.." WHERE ID ="..delMyQuesList[k]["ID"];
 			   db:query(sql);
-			   cache:hset("myquestion_"..delMyQuesList[k]["ID"],"b_delete",b_delete)
-			   cache:hset("myquestion_"..delMyQuesList[k]["ID"],"type_id",type_id)
+			   cache:hmset("myquestion_"..delMyQuesList[k]["ID"],"b_delete",b_delete);
+			   cache:hmset("myquestion_"..delMyQuesList[k]["ID"],"type_id",type_id);
 			end
 	
 	 end
 
+	--获取删除试题信息后的知识点
+	local zsd_sql = "SELECT T1.STRUCTURE_ID_INT, T2.STRUCTURE_NAME as STRUCTURE_NAME  FROM T_TK_QUESTION_INFO T1 "..
+			" INNER JOIN T_RESOURCE_STRUCTURE T2 ON T1.STRUCTURE_ID_INT=T2.STRUCTURE_ID AND T2.TYPE_ID=2"..
+			" WHERE T1.QUESTION_ID_CHAR="..quote(question_id_char).." AND T1.B_DELETE=0 AND T1.B_IN_PAPER=0 and t1.create_person = "..person_id.." GROUP BY T1.STRUCTURE_ID_INT";
+
+
+	local zsd_list = db:query(zsd_sql);
+	local zsdStr="";
+	if #zsd_list>0 then
+		for j=1,#zsd_list do
+			local strucName = zsd_list[j]["STRUCTURE_NAME"];
+			zsdStr = zsdStr..","..strucName
+		end
+		zsdStr = string.sub(zsdStr,2,-1);
+	end
 
 	  --更新t_tk_question_info表中未删除的记录的json_question字段中的知识点
 	local sql_info = "SELECT ID, QUESTION_ID_CHAR, QUESTION_TITLE, QUESTION_TIPS, QUESTION_TYPE_ID, "..
                 "QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, KG_ZG, SCHEME_ID_INT, STRUCTURE_ID_INT, JSON_QUESTION, "..
                 "JSON_ANSWER, UPDATE_TS, STRUCTURE_PATH, B_IN_PAPER, PAPER_ID_INT, B_DELETE, OPER_TYPE, DOWN_COUNT, CHECK_STATUS, "..
-                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = "..quote(question_id_char).." and b_delete = "..b_delete_check;
-	
-	ngx.log(ngx.ERR,"***************************"..sql_info.."**************************")
+                "CHECK_MSG, SORT_ID FROM T_TK_QUESTION_INFO WHERE QUESTION_ID_CHAR = "..quote(question_id_char).." and create_person = "..person_id;
+
 	local quesToUpdate = db:query(sql_info);
 	
 	for m=1,#quesToUpdate do
@@ -262,7 +282,7 @@ else
 		  local up_info_json = "UPDATE T_TK_QUESTION_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..quesToUpdate[m]["ID"];
 		  db:query(up_info_json);
 		  --修改缓存
-		  cache:hset("question_"..quesToUpdate[m]["ID"],"json_question",quesToUpdate[m]["JSON_QUESTION"])
+		 cache:hmset("question_"..quesToUpdate[m]["ID"],"json_question",newJsonQues);
 	end
 	--更新t_tk_question_my_info表中未删除的记录的json_question字段中的知识点
 	
@@ -270,6 +290,7 @@ else
 						"QUESTION_TYPE_ID, KG_ZG, QUESTION_DIFFICULT_ID, CREATE_PERSON, GROUP_ID, TS, SCHEME_ID_INT, "..
 						"STRUCTURE_ID_INT, JSON_QUESTION, JSON_ANSWER, UPDATE_TS, TYPE_ID, TABLE_PK, UPLOADER_ID, DOWN_COUNT, "..
 						"B_DELETE FROM T_TK_QUESTION_MY_INFO WHERE QUESTION_ID_CHAR="..quote(question_id_char);
+
 
 	local myQuesToUpdate = db:query(sql_my_info);
 	for n=1,#myQuesToUpdate do
@@ -279,7 +300,7 @@ else
 		  local newJsonQues = ngx.encode_base64(cjson.encode(quesJson));
 		  local up_info_json = "UPDATE T_TK_QUESTION_MY_INFO SET JSON_QUESTION="..quote(newJsonQues)..", UPDATE_TS="..update_ts.." WHERE ID="..myQuesToUpdate[n]["ID"];
 		  db:query(up_info_json);
-		  cache:hset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",myQuesToUpdate[n]["JSON_QUESTION"]);
+		 cache:hmset("myquestion_"..myQuesToUpdate[n]["ID"],"json_question",newJsonQues);
 	end
 	-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
 	sendAsyncCmd(question_id_char, del_type, strucIdArray);

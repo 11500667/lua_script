@@ -72,13 +72,10 @@ if identityId == "2" then
 elseif identityId == "5" then 
 
 	local bm = cache:hget("person_" .. personId .. "_" .. identityId, "bm");
-	ngx.log(ngx.ERR, "===> bm ===> ", bm, " ===> ", type(bm));
 	if bm~=nil and bm~=ngx.null and bm~="" then
 		local orgIdTab = Split(v_dsideal_person_orgs, ",");
-		ngx.log(ngx.ERR, "===> v_dsideal_person_orgs 按逗号分隔后的table ===> ", cjson.encode(orgIdTab));
 		for i=1, #orgIdTab do
 			local dsidealOrgId = orgIdTab[i];
-			ngx.log(ngx.ERR, "===> dsidealOrgId ===> 值：", dsidealOrgId, " ==> 类型：", type(dsidealOrgId));
 			if dsidealOrgId==bm then
 				isDsidealPerson = true;
 			end
@@ -91,11 +88,8 @@ resultObj.success = true;
 resultObj.is_dsideal_person = isDsidealPerson;
 
 local responseStr = cjson.encode(resultObj);
-ngx.log(ngx.ERR, "===> isDsidealPerson.lua 返回的值 ===> ", responseStr);
 ngx.print(responseStr);
 
 
 local ok, err = cache: set_keepalive(0, v_pool_size)
-if not ok then
-	ngx.log(ngx.ERR, "====>将Redis连接归还连接池出错！");
-end
+

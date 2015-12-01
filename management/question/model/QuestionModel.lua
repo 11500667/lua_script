@@ -93,6 +93,7 @@ local function questionCopyOrMove(version_id,structure_ids_table,question_ids_ta
 
 	local db = DBUtil: getDb();
 	local cache = nil;
+	local ssdb = SSDBUtil:getDb();
 
 	for k,v in pairs(question_ids_table.list) do
 
@@ -166,15 +167,28 @@ local function questionCopyOrMove(version_id,structure_ids_table,question_ids_ta
 
 			local question_id = getNewRecordPK();
 
-			local insertSql = "insert into t_tk_question_info (id,question_id_char,question_title ,question_tips,question_type_id,question_difficult_id,create_person,group_id,down_count,ts,kg_zg,scheme_id_int,structure_id_int,json_question,json_answer,update_ts,structure_path,b_in_paper ,paper_id_int,b_delete,oper_type,check_status,check_msg,use_count,sort_id) values("..question_id..","..quote(question_id_char)..","..quote(question_title)..","..quote(question_tips)..","..question_type_id..","..question_difficult_id..","..create_person..","..group_id..","..down_count..","..ts..","..kg_zg..","..scheme_id_int..","..structure_ids_table[i]..","..quote(json_question_new)..","..quote(json_answer)..","..update_ts..","..quote(structure_path)..","..b_in_paper..","..paper_id_int..","..b_delete..","..oper_type..","..check_status..","..quote(check_msg)..","..use_count..","..sort_id..")";
 
-			local res, err, errno, sqlstate =db:query(insertSql);
-			if not res then
-				ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-				return false;
+			local isQuesStrucExistTab = ssdb:hexists("1_2_"..question_id_char.."_"..structure_ids_table[i],"is_struc_repeat");
+
+			if isQuesStrucExistTab[1] ~= "1" then
+
+				local insertSql = "insert into t_tk_question_info (id,question_id_char,question_title ,question_tips,question_type_id,question_difficult_id,create_person,group_id,down_count,ts,kg_zg,scheme_id_int,structure_id_int,json_question,json_answer,update_ts,structure_path,b_in_paper ,paper_id_int,b_delete,oper_type,check_status,check_msg,use_count,sort_id) values("..question_id..","..quote(question_id_char)..","..quote(question_title)..","..quote(question_tips)..","..question_type_id..","..question_difficult_id..","..create_person..","..group_id..","..down_count..","..ts..","..kg_zg..","..scheme_id_int..","..structure_ids_table[i]..","..quote(json_question_new)..","..quote(json_answer)..","..update_ts..","..quote(structure_path)..","..b_in_paper..","..paper_id_int..","..b_delete..","..oper_type..","..check_status..","..quote(check_msg)..","..use_count..","..sort_id..")";
+
+				local res, err, errno, sqlstate =db:query(insertSql);
+				if not res then
+					ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
+					return false;
+				end
+
+				cache:hmset("question_"..question_id,"scheme_id_int",scheme_id_int,"json_question",json_question_new,"create_person",create_person,"question_id_char",question_id_char,"sort_id",sort_id,"json_answer",json_answer,"down_count",down_count,"b_delete",b_delete);
+
+				local ssdbKey  = "1_2_"..question_id_char.."_"..structure_ids_table[i];
+
+				local hashKey = "is_struc_repeat";
+				local result, err = ssdb:hset(ssdbKey, hashKey,question_id);
+
 			end
 
-			cache:hmset("question_"..question_id,"scheme_id_int",scheme_id_int,"json_question",json_question_new,"create_person",create_person,"question_id_char",question_id_char,"sort_id",sort_id,"json_answer",json_answer,"down_count",down_count,"b_delete",b_delete);
 		end
 
 		if op_type == 2 then
@@ -189,6 +203,7 @@ local function questionCopyOrMove(version_id,structure_ids_table,question_ids_ta
 
 	CacheUtil:keepConnAlive(cache);
 	DBUtil: keepDbAlive(db);
+	SSDBUtil:keepAlive(ssdb);
 
 	return true;
 end
