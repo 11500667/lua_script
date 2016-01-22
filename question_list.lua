@@ -215,8 +215,9 @@ local offset = pageSize*pageNumber-pageSize
 local limit = pageSize
 local str_maxmatches = 100000
 
+ngx.log(ngx.ERR,"@@@@@@@@@@@@".."SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype.."filter=b_in_paper,0;filter=b_delete,0;select=("..str_group..") as match_qq;filter= match_qq, 1;groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;".."@@@@@@@@@@@@@");
 
-local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype.."filter=b_in_paper,0;filter=b_delete,0;select=("..str_group..") as match_qq;filter= match_qq, 1;groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
+local res = db:query("SELECT SQL_NO_CACHE id FROM t_tk_question_info_sphinxse WHERE query=\'"..keyword..structure_scheme..str_ndid..str_qtype.."filter=b_in_paper,0;filter=b_delete,0;select=("..str_group..") as match_qq;filter= match_qq, 1;groupsort=ts desc;groupby=attr:question_id_char;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;");
 
 --去第二个结果集中的Status中截取总个数
 local res1 = db:read_result()

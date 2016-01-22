@@ -90,7 +90,6 @@ if forum_id and len(forum_id) > 0 then
 	
 	--删除版主
 	local usql2 = "update t_social_bbs_forum_user set flag = 0 where forum_id = "..forum_id.." and flag = 1"
-	mysql:query(usql2);
 	--添加版主
 	ngx.log(ngx.ERR,cjson.encode(forum_admin_t))
 	for i=1, #forum_admin_t do

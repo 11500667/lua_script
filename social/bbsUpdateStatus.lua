@@ -14,8 +14,21 @@ local ssdblib = require "resty.ssdb"
 local mysqllib = require "resty.mysql"
 
 --get args
-local bbs_id = ngx.var.arg_bbs_id
-local status = ngx.var.arg_status
+local request_method = ngx.var.request_method
+local args,err
+if request_method == "GET" then
+    args,err = ngx.req.get_uri_args()
+else
+    ngx.req.read_body()
+    args,err = ngx.req.get_post_args() 
+end
+if not args then 
+    say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+
+local bbs_id = args["bbs_id"]
+local status = args["status"]
 
 if not bbs_id or len(bbs_id) == 0 or
 	not status or len(status) == 0 then

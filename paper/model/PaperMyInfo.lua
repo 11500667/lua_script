@@ -2,7 +2,7 @@
 #申健 2015-04-15
 #描述：我的试卷的基础信息类
 ]]
-
+local redisUtil    = require "common.CacheUtil"; 
 local _PaperMyInfo = {};
 
 ---------------------------------------------------------------------------
@@ -42,6 +42,19 @@ end
 
 _PaperMyInfo.updateDeleteStatus = updateDeleteStatus;
 
+-- -----------------------------------------------------------------------------------
+-- 函数描述： 获取我的试卷的缓存信息（通过我的试卷的ID）
+-- 日    期： 2015年10月16日
+-- 参    数： myInfoId   我的试卷的ID
+-- 返 回 值： table对象，存储类型为HASH
+-- -----------------------------------------------------------------------------------
+local function getMyPaperInfoFromRedis(self, myInfoId)
+	local myInfo = redisUtil: hmget("mypaper_" .. myInfoId , "paper_id_int", "paper_id_char", "paper_name", "paper_type", "paper_page", "scheme_id", "structure_id", "structure_code", "parent_structure_name", "source_id", "file_id", "extension", "for_iso_url", "for_urlencoder_url", "preview_status", "json_content", "question_count", "person_id", "identity_id", "create_time", "ts", "group_id", "down_count", "resource_info_id", "b_delete", "type_id", "table_pk", "owner_id", "down_count", "stage_id", "subject_id", "paper_app_type", "paper_app_type_name");
+	return myInfo;
+end
+_PaperMyInfo.getMyPaperInfoFromRedis = getMyPaperInfoFromRedis;
 ---------------------------------------------------------------------------
+
+
 
 return _PaperMyInfo;

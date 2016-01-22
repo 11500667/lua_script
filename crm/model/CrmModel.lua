@@ -1,6 +1,6 @@
 local DBUtil   = require "common.DBUtil";
 local _CrmModel = {};
-local cjson = require "cjson"
+local cjson = require "cjson";
 local quote = ngx.quote_sql_str;
 local log = require("social.common.log_ruijie");
 
@@ -215,10 +215,10 @@ local function delContractByStr(contractStr)
     if #sqlTable>0 then
         local boolResult = DBUtil: batchExecuteSqlInTx(sqlTable, #sqlTable);
         if boolResult then
-            ngx.log(ngx.ERR, ">>>>>>>>>>>>>>> 批量更新[成功] <<<<<<<<<<<<<<<<<<<<");
+            log.debug(getCurTime()..">>>>>>>>>>>>>>> 批量更新[成功] <<<<<<<<<<<<<<<<<<<<");
             return true;
         else
-            ngx.log(ngx.ERR, ">>>>>>>>>>>>>>> 批量更新[失败] <<<<<<<<<<<<<<<<<<<<");
+            log.debug(getCurTime()..">>>>>>>>>>>>>>> 批量更新[失败] <<<<<<<<<<<<<<<<<<<<");
             return false;
         end
     end

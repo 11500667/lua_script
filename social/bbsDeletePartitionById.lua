@@ -13,7 +13,19 @@ local ssdblib = require "resty.ssdb"
 local mysqllib = require "resty.mysql"
 
 --get args
-local partition_id = ngx.var.arg_partition_id
+local request_method = ngx.var.request_method
+local args,err
+if request_method == "GET" then
+    args,err = ngx.req.get_uri_args()
+else
+    ngx.req.read_body()
+    args,err = ngx.req.get_post_args() 
+end
+if not args then 
+    say("{\"success\":false,\"info\":\""..err.."\"}")
+    return
+end
+local partition_id = args["partition_id"]
 
 if not partition_id or len(partition_id) == 0 then
     say("{\"success\":false,\"info\":\"参数错误！\"}")

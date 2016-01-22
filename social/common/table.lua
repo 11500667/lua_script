@@ -664,4 +664,22 @@ function Table:toString(t, indentStr, indentLevel, marks)
     return tName .. ":{\n" .. space .. table.concat(items, ",\n" .. space) .. "\n" .. preSpace .. "}"
 end
 
+
+--- 将表转化为可打印的字符串
+-- @param table param 表
+-- @param table keys  键组.
+-- @return table k v 表.
+function Table:toMap(param, keys)
+    checkTable(param)
+    checkTable(keys)
+    if #param > #keys then
+        return {};
+    end
+    local result = {}
+    for _, k in ipairs(keys) do
+        result[k] = param[_];
+    end
+    return result;
+end
+
 return Table

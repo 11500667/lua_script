@@ -36,6 +36,8 @@ for index = 1, #v_share_range do
 end
 rangeTable["org_List"] = orgList;
 
+
+
 -- 获取用户可共享的群组
 local groupList = {}
 if v_share_group then

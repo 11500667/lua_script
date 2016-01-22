@@ -25,8 +25,12 @@ function Application:run()
     for i = 1, #self.urls, 2 do
         local pattern = self.urls[i]
         local view = self.urls[i + 1]
+       -- log.debug(view)
+      --  log.debug(pattern)
+       -- log.debug(ngx.var.uri)
         -- regex mather in compile mode
         local match = ngx.re.match(ngx.var.uri, pattern, "")
+
         if match then
             if _M.debug then
                 ngx.log(ngx.DEBUG, "match pattern:", pattern)

@@ -1,4 +1,7 @@
 
+require "common.StringUtil";
+require "common.TableUtil";
+
 -- -----------------------------------------------------------------------------------
 -- 函数描述： 公有函数 -> 获取参数
 -- 日    期： 2015年8月5日
@@ -18,11 +21,15 @@ function getParams()
     if ngx.var.request_method == "POST" then
         -- 获取body中的参数，如果url中已经存在该参数，则会被post中的覆盖
         ngx.req.read_body();
-        local postArgs = ngx.req.get_post_args();
+        local postArgs = {};
+        local bodyStr  = ngx.req.get_body_data();
+        if bodyStr ~= nil and bodyStr ~= "" then
+            postArgs = ngx.decode_args(bodyStr);
+        end
         --ngx.log(ngx.ERR, "\n[sj_log] -> [BODY中的参数]");
         for key, value in pairs(postArgs) do
             args[key] = value;
-            --ngx.log(ngx.ERR, "\n[sj_log] -> name: [", key, "], value: [", value, "]");
+            -- ngx.log(ngx.ERR, "\n[sj_log] -> name: [", key, "], value: [", value, "]");
         end
     end
 
@@ -157,9 +164,8 @@ end
 -- 返 回 值： number类型的时间戳：例：2015082016443312345
 -- -----------------------------------------------------------------------------------
 function getTS()
-    local tsModel  = require "resty.TS";
-    local tsValue  = tsModel.getTs();
-    return tsValue;
+    local tsStr = os.date("%Y%m%d%H%M%S").."00"..string.sub(string.format("%14.3f",ngx.now()),12,14);
+    return tsStr;
 end
 
 -- -----------------------------------------------------------------------------------

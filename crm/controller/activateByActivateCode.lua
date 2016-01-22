@@ -230,10 +230,7 @@ if school_name ~= "0" and school_name ~= 0 then
         area_id = province_id;
     end
 
-    local captureResponse = ngx.location.capture("/dsideal_yy/crm/addEduUnit", {
-        method = ngx.HTTP_POST,
-        body = "area_id="..area_id.."&pId1="..province_id.."&pId2="..city_id.."&pId3="..district_id.."&org_type=2&unit_name="..school_name.."&edu_type=1&register_flag=0&business_system=COMMON&school_type="..school_type
-    });
+    local captureResponse = ngx.location.capture("/dsideal_yy/crm/addEduUnit?area_id="..area_id.."&pId1="..province_id.."&pId2="..city_id.."&pId3="..district_id.."&org_type=2&unit_name="..school_name.."&edu_type=1&register_flag=0&business_system=COMMON&school_type="..school_type);
 
     local return_code = "";
 
@@ -375,7 +372,7 @@ else
     end
 
     if res[1].teacher_limit == -1 then
-        local return_info = "{\"return_code\":\"000001\",\"return_msg\":\"该学校创建教师数量无限制，不允许使用激活码\"}";
+        local return_info = "{\"return_code\":\"100016\",\"return_msg\":\"该学校创建教师数量无限制，不允许使用激活码\"}";
         log.debug(crmModel.getCurTime().." return_info==>"..return_info);
         ngx.print(return_info);
         return

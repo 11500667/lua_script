@@ -8,6 +8,7 @@ local request_method = ngx.var.request_method;
 local crmModel = require "crm.model.CrmModel";
 local cjson = require "cjson"
 local log = require("social.common.log_ruijie");
+local CacheUtil = require "common.CacheUtil";
 
 local args = nil;
 if "GET" == request_method then
@@ -145,10 +146,7 @@ end
 for i=1,tonumber(create_num) do
 
     --创建老师开始
-    local captureResponse = ngx.location.capture("/dsideal_yy/agent/per/teacher_add", {
-        method = ngx.HTTP_POST,
-        body = "tea_name=锐捷&xb_name=男&org_id="..bureau_id.."&org_name="..org_name.."&subject_id=2&subject_name=数学&stage_id=4"
-    });
+    local captureResponse = ngx.location.capture("/dsideal_yy/agent/per/teacher_add?tea_name=锐捷&xb_name=男&org_id="..bureau_id.."&org_name="..org_name.."&subject_id=2&subject_name=数学&stage_id=4");
 
     if captureResponse.status == ngx.HTTP_OK then
         local resultJson = cjson.decode(captureResponse.body);
@@ -179,6 +177,16 @@ for i=1,tonumber(create_num) do
             ngx.print(return_info);
             return
         end
+
+        local result = CacheUtil:hset("login_"..login_name,"pwd",ngx.md5(pwd));
+
+        if not result then
+            local return_info = "{\"return_code\":\"000001\",\"return_msg\":\"系统错误\"}";
+            log.debug(crmModel.getCurTime().." 更新教师密码redis缓存错误@@@@@@@return_info==>"..return_info);
+            ngx.print(return_info);
+            return
+        end
+
 
         local contract_id = "";
 

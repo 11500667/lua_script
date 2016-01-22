@@ -162,6 +162,11 @@ function  _SSDBUtil.multi_hget(self, name, ...)
     self:_keepAlive();
     if not result then
         -- ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 结果：[", cjson.encode(result), "], err:[", err, "]");
+        return false, err;
+    end
+
+    if result[1] == "ok" then
+        return false, "该条记录不存在";
     end
 
     return result;
@@ -172,12 +177,16 @@ end
 function  _SSDBUtil.multi_hget_hash(self, name, ...)
     local  keys   = {...};
     local  ssdb   = self:getDb();
-	ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [hset] -> 参数：name: [", name, "], kvTable: [", cjson.encode(keys), "]");
+	-- ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [hset] -> 参数：name: [", name, "], kvTable: [", cjson.encode(keys), "]");
     local  result, err = ssdb: multi_hget(name, unpack(keys));
-    ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 结果：[", cjson.encode(result), "], err:[", err, "]");
+    -- ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 结果：[", cjson.encode(result), "], err:[", err, "]");
     self:_keepAlive();
     if not result then
-        ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 结果：[", cjson.encode(result), "], err:[", err, "]");
+        -- ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 结果：[", cjson.encode(result), "], err:[", err, "]");
+        return false, err;
+    end
+
+    if result[1] == "ok" then
         return false;
     end
 
@@ -185,7 +194,7 @@ function  _SSDBUtil.multi_hget_hash(self, name, ...)
     for index = 1, #keys do
         tableRes[keys[index]] = result[index*2];
     end
-    ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 返回的结果：[", cjson.encode(tableRes), "]");
+    -- ngx.log(ngx.ERR, "[sj_log] -> [SSDBUtil] -> [multi_hget] -> 返回的结果：[", cjson.encode(tableRes), "]");
     return tableRes;
 end
 

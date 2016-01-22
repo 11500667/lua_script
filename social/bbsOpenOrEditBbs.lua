@@ -101,7 +101,6 @@ if sresult and #sresult > 0 then
     bbs.domain = domain
     bbs.social_type = social_type
     ssdb:multi_hset("social_bbs_"..bbs_id, bbs)
-    ssdb:hset("social_bbs_region_"..region_id, "bbs_id", bbs_id)
 
     --return
     local rr = {}

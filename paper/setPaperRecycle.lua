@@ -82,9 +82,11 @@ local cityId 	 = person_map[2];
 local districtId = person_map[3];
 local schoolId   = person_map[4];
 
-local  sql = "SELECT SQL_NO_CACHE ID FROM t_sjk_paper_info_sphinxse WHERE QUERY='filter=paper_id_int,"..paper_id_int..";filter=b_delete,"..b_delete_check..";"..
-				"select=(IF(group_id="..provinceId..",0,1) AND IF(group_id="..cityId..",0,1) "..
-				"AND IF(group_id="..districtId..",0,1) AND IF(group_id="..schoolId..",0,1)) as c_condition;filter=c_condition,1';";
+--local  sql = "SELECT SQL_NO_CACHE ID FROM t_sjk_paper_info_sphinxse WHERE QUERY='filter=paper_id_int,"..paper_id_int..";filter=b_delete,"..b_delete_check..";"..
+		--		"select=(IF(group_id="..provinceId..",0,1) AND IF(group_id="..cityId..",0,1) "..
+		--		"AND IF(group_id="..districtId..",0,1) AND IF(group_id="..schoolId..",0,1)) as c_condition;filter=c_condition,1';";
+				
+local sql = "SELECT SQL_NO_CACHE ID FROM t_sjk_paper_info_sphinxse WHERE QUERY='filter=group_id,2;filter=paper_id_int,"..paper_id_int..";filter=b_delete,"..b_delete_check..";'";
 
 local infoIdList = db:query(sql);
 
@@ -114,6 +116,15 @@ for i=1,#myinfoIdList do
 	--修改缓存
     cache:hmset("mypaper_"..myinfoIdList[i]["ID"],paper_info)
 end
+
+-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
+local paramObj  = {};
+paramObj["paper_id_int"] = paper_id_int;
+local asyncQueueService = require "common.AsyncDataQueue.AsyncQueueService";
+local asyncCmdStr       = asyncQueueService: getAsyncCmd("002003", paramObj)
+ngx.log(ngx.ERR, "[sj_log] -> [supervise] -> asyncCmdStr: [", asyncCmdStr, "]");
+asyncQueueService: sendAsyncCmd(asyncCmdStr);
+-- 申健 2015年10月22日添加，删除试卷后，向异步队列中写入消息 begin
 
 --redis放回连接池
 cache:set_keepalive(0,v_pool_size)

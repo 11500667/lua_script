@@ -9,7 +9,10 @@
 
 local Constant = {
     MESSAGE_TYPE_BBS = "1",
-    MESSAGE_TYPE_BOARD ="2",
+    MESSAGE_TYPE_BOARD = "2",
+    MESSAGE_TYPE_REGIONAL = "3",
+    IDENTITY_TEACHER = "5",
+    IDENTITY_STUDENT = "6",
 }
 --- 转换orgType
 --- 省101 市102 区103 校104 班105

@@ -205,10 +205,11 @@ function _BaseController: getCookieByName(cookieName, validateNull)
 		validateNull = false;
 	end
 	local cookieValue = ngx.var["cookie_" .. cookieName];
+    ngx.log(ngx.ERR, "[sj_log] -> [BaseController] -> cookieValue: [", cookieValue, "]");
 	if validateNull then
-		if cookieValue ~= nil and cookieValue ~= "" then
-			self: printJson(encodeJson({ success = false, info = "cookie中名称： [", paramName, "] 的值不能为空" }));
-			ngx.log(ngx.ERR, "[sj_log] -> [BaseController] -> cookie中名称： [", paramName, "] 的值为空！！！");
+		if cookieValue == nil or cookieValue == "" then
+			self: printJson(encodeJson({ success = false, info = "cookie中名称： [" .. cookieName .. "] 的值不能为空" }));
+			ngx.log(ngx.ERR, "[sj_log] -> [BaseController] -> cookie中名称： [", cookieName, "] 的值为空！！！");
 			ngx.exit(ngx.HTTP_OK);
 			return nil;
 		end

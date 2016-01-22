@@ -53,13 +53,52 @@ function _DBUtil:querySingleSql(sql)
 	local db = _DBUtil:getDb();
 	local queryResult, err, errno, sqlstate = db: query(sql);
     if not queryResult or queryResult == nil then
-		ngx.log(ngx.ERR, "[sj_log]->[DBUtil]-> sql语句执行出错：[err]-> [", err, "], [errno]-> [", errno, "], [sqlstate]->[", sqlstate, "]");
+		ngx.log(ngx.ERR, "[sj_log]->[DBUtil]-> sql语句：[", sql, "], sql语句执行出错：[err]-> [", err, "], [errno]-> [", errno, "], [sqlstate]->[", sqlstate, "]");
 		_DBUtil:keepDbAlive(db);
 		return false, err;
 	end
 	_DBUtil:keepDbAlive(db);
 	return queryResult;
 end
+
+-- -----------------------------------------------------------------------------------
+-- 函数描述： DBUtil公有函数 -> 插入数据
+-- 日    期： 2015年10月16日
+-- 作    者： 申健
+-- 参    数： tableName  要插入的表名
+-- 参    数： dataTable  要插入的数据的table，存储类型为Hash类型
+-- 返 回 值： string类型：需要调用的函数名；如果获取失败，则返回nil；
+-- -----------------------------------------------------------------------------------
+local function save(self, tableName, dataTable)
+    
+    ngx.log(ngx.ERR, "\n[sj_log] -> [DBUtil] -> save函数 -> \ntableName : [", tableName, "] \n dataTable: [", encodeJson(dataTable), "]\n");
+    local columnSegement = "INSERT INTO " .. tableName ;
+    local valueSegement  = "";
+    local columnTable    = {};
+    local valueTable     = {}; 
+
+    for columnName, value in pairs(dataTable) do
+        table.insert(columnTable , columnName);
+        table.insert(valueTable  , value);
+    end
+
+    columnSegement = columnSegement .. " (" .. table.concat(columnTable , ", ") .. ")";
+    valueSegement  = valueSegement  .. " (" .. table.concat(valueTable  , ", ") .. ");";
+
+    local sql = columnSegement .. " VALUES" .. valueSegement;
+    ngx.log(ngx.ERR, "[sj_log] -> [DBUtil] -> 组装后的sql如下：[", sql, "]");
+
+    local db = self: getDb();
+    local result, err, errno, sqlstate = db: query(sql);
+    if not result then
+        ngx.log(ngx.ERR, "[sj_log]->[DBUtil]-> sql语句执行出错：[err]-> [", err, "], [errno]-> [", errno, "], [sqlstate]->[", sqlstate, "]");
+		self: keepDbAlive(db);
+		return false, err;
+    end
+    self: keepDbAlive(db);
+	return result;
+end
+_DBUtil.save = save;
 
 ---------------------------------------------------------------------------
 --[[

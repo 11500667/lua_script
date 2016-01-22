@@ -116,6 +116,10 @@ if result then
     end
 end
 
+log.debug(crmModel.getCurTime().." 返回参数==>return_param_1========>"..return_param_1);
+log.debug(crmModel.getCurTime().." 返回参数==>return_param_2========>"..return_param_2);
+log.debug(crmModel.getCurTime().." 返回参数==>return_param_3========>"..return_param_3);
+
 
 local return_info = "{\"return_code\":\"000000\",\"return_msg\":\"操作成功\",\"return_param_1\":\""..return_param_1.."\",\"return_param_2\":\""..return_param_2.."\",\"return_param_3\":\""..return_param_3.."\"}";
 log.debug(crmModel.getCurTime().." 查询成功@@@@@@@return_info==>"..return_info);

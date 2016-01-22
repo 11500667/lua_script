@@ -1,7 +1,7 @@
 #ngx.header.content_type = "text/plain;charset=utf-8"
 --[[
-#³ÂÀöÔÂ 2015-01-27
-#ÃèÊö£ºÊÇ¸ù¾İÊÔ¾íĞÅÏ¢»ñÈ¡ÊÔ¾í»ù±¾ĞÅÏ¢
+#é™ˆä¸½æœˆ 2015-01-27
+#æè¿°ï¼šæ˜¯æ ¹æ®è¯•å·ä¿¡æ¯è·å–è¯•å·åŸºæœ¬ä¿¡æ¯
 ]]
 
 local request_method = ngx.var.request_method
@@ -13,27 +13,24 @@ else
     args = ngx.req.get_post_args()
 end
 
---»ñÈ¡²ÎÊıid£¬²¢ÅĞ¶Ï²ÎÊıÊÇ·ñÕıÈ·
+--è·å–å‚æ•°idï¼Œå¹¶åˆ¤æ–­å‚æ•°æ˜¯å¦æ­£ç¡®
 if args["id"] == nil or args["id"] == "" then
-    ngx.say("{\"success\":false,\"info\":\"id²ÎÊı´íÎó£¡\"}")
+    ngx.say("{\"success\":false,\"info\":\"idå‚æ•°é”™è¯¯ï¼\"}")
     return
 end
 
 local id = args["id"]
---»ñÈ¡²ÎÊıpaper_type£¬²¢ÅĞ¶Ï²ÎÊıÊÇ·ñÕıÈ·
+--è·å–å‚æ•°paper_typeï¼Œå¹¶åˆ¤æ–­å‚æ•°æ˜¯å¦æ­£ç¡®
 if args["paper_type"] == nil or args["paper_type"] == "" then
-    ngx.say("{\"success\":false,\"info\":\"paper_type²ÎÊı´íÎó£¡\"}")
+    ngx.say("{\"success\":false,\"info\":\"paper_typeå‚æ•°é”™è¯¯ï¼\"}")
     return
 end
 
 local paper_type = args["paper_type"]
-
-
 local cjson = require "cjson";
 cjson.encode_empty_table_as_object(false);
 
-
--- »ñÈ¡redisÁ¬½Ó
+-- è·å–redisè¿æ¥
 local redis = require "resty.redis"
 local cache = redis:new()
 local ok,err = cache:connect(v_redis_ip,v_redis_port)
@@ -42,7 +39,7 @@ if not ok then
     return
 end
 
---Á¬½ÓSSDB
+--è¿æ¥SSDB
 local ssdb = require "resty.ssdb"
 local ssdb_db = ssdb:new()
 local ok, err = ssdb_db:connect(v_ssdb_ip, v_ssdb_port)
@@ -56,73 +53,41 @@ local resource_info_id;
 local redis_info = {};
 
 if paper_type=="1" then
-   
-      redis_info = cache:hmget("paper_"..id,"paper_id_char","paper_id_int","paper_name","paper_type","resource_info_id");
-      paper_name = redis_info[3]
- 
---if redis_info[4] ~= "1" then
-      resource_info_id= redis_info[5] 
-	--  ngx.log(ngx.ERR,"===========================resource_info_id"..resource_info_id)
-	 else
-	    redis_info = cache:hmget("mypaper_"..id,"paper_id_char","paper_id_int","paper_name","paper_type","resource_info_id");
-	    paper_name = redis_info[3]
-	    resource_info_id= redis_info[5] 
+    redis_info = cache:hmget("paper_"..id,"paper_id_char","paper_id_int","paper_name","paper_type","resource_info_id");
+    paper_name = redis_info[3]
+    resource_info_id= redis_info[5] 
+else
+	redis_info = cache:hmget("mypaper_"..id,"paper_id_char","paper_id_int","paper_name","paper_type","resource_info_id");
+	paper_name = redis_info[3]
+	resource_info_id= redis_info[5] 
 	   
 end
-	 
-	 
    local redis_info2;
-   --ngx.log(ngx.ERR,"===========================resource_info_id"..resource_info_id)
    redis_info2= ssdb_db:multi_hget("resource_"..resource_info_id,"resource_format","resource_page","preview_status","for_urlencoder_url","for_iso_url","file_id");
-
 
 function encodeURI(s)
     s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
     return string.gsub(s, " ", "+")
 end
 
-
 local url_str = encodeURI(paper_name);
 local result = {};
-
---local paperinfo_res = {};
 result.iid = id
 result.paper_id = redis_info[1]
 result.paper_id_int = redis_info[2]
 result.paper_name = paper_name
 result.paper_source = redis_info[4]
---if redis_info[4] ~= "1" then 
 result.extenstion = redis_info2[2]
-
---encode_empty_table_as_object
- 
 result.page = redis_info2[4]
-
 result.preview_status = redis_info2[6]
-
 result.for_urlencoder_url = redis_info2[8]
 result.for_iso_url = redis_info2[10]
 result.url_code = url_str
 result.file_id = redis_info2[12]
---end 
-
 result.success = true;
---result.list = paperinfo_res;
 
---redis·Å»ØÁ¬½Ó³Ø
+--redisæ”¾å›è¿æ¥æ± 
 cache:set_keepalive(0,v_pool_size)
---·Å»Øµ½SSDBÁ¬½Ó³Ø
+--æ”¾å›åˆ°SSDBè¿æ¥æ± 
 ssdb_db:set_keepalive(0,v_pool_size);
-
 ngx.say(cjson.encode(result));
-
-
-
-
-
-
-
-
-
-
-

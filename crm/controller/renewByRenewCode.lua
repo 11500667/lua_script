@@ -111,7 +111,7 @@ log.debug(crmModel.getCurTime().." 续费帐号数量==>"..renew_count);
 log.debug(crmModel.getCurTime().." 已使用续费帐号数量==>"..already_count);
 
 if tonumber(is_used) == 1 and tonumber(renew_mode) == 2 then--是否已使用
-    local return_info = "{\"return_code\":\"100010\",\"return_msg\":\"激活码已使用\"}";
+    local return_info = "{\"return_code\":\"200006\",\"return_msg\":\"续费码已使用\"}";
     log.debug(crmModel.getCurTime().." return_info==>"..return_info);
     ngx.say(return_info);
     return;
@@ -339,8 +339,11 @@ else
 end
 
 return_param_1 = string.sub(return_param_1,1,#return_param_1-1);
+log.debug(crmModel.getCurTime().." 续费成功的帐号@@@@@@@return_info==>"..return_param_1);
+
+return_param_1="";
 
 local return_info = "{\"return_code\":\"000000\",\"return_msg\":\"操作成功\",\"return_param_1\":\""..return_param_1.."\"}";
-log.debug(crmModel.getCurTime().." 激活成功@@@@@@@return_info==>"..return_info);
+log.debug(crmModel.getCurTime().." 续费成功@@@@@@@return_info==>"..return_info);
 ngx.print(return_info);
 

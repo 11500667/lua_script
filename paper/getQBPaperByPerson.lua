@@ -43,16 +43,32 @@ if identity_id == "nil" then
     return
 end
 
-
 local subject_id = tostring(args["subject_id"])
 if subject_id == "nil" then
     ngx.say("{\"success\":\"false\",\"info\":\"subject_id参数丢失！\"}")    
     return
 end
 
+local type_id = tostring(args["type_id"])
+if type_id == "nil" then
+    ngx.say("{\"success\":\"false\",\"info\":\"type_id参数丢失！\"}")    
+    return
+end
+
 local str_subject_id = "";
 if subject_id ~= "0" then
    str_subject_id = "filter=subject_id,"..subject_id..";";
+end
+
+local stage_id = tostring(args["stage_id"])
+if stage_id == "nil" then
+    ngx.say("{\"success\":\"false\",\"info\":\"stage_id参数丢失！\"}")    
+    return
+end
+
+local str_stage_id = "";
+if stage_id ~= "0" then
+   str_stage_id = "filter=stage_id,"..stage_id..";";
 end
 
 --搜索关键字
@@ -105,9 +121,9 @@ local offset = pageSize*pageNumber-pageSize
 local limit = pageSize
 local str_maxmatches = pageNumber*100;
 
-ngx.log(ngx.ERR,"============SELECT SQL_NO_CACHE id FROM t_sjk_paper_my_info_sphinxse WHERE query=\'"..keyword.."filter=b_delete,0;filter=type_id,6;filter=person_id,"..person_id..";"..str_subject_id.." maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;================");
+ngx.log(ngx.ERR,"============SELECT SQL_NO_CACHE id FROM t_sjk_paper_my_info_sphinxse WHERE query=\'"..keyword.."filter=b_delete,0;filter=type_id,"..type_id..";filter=person_id,"..person_id..";"..str_stage_id..str_subject_id.."sort=attr_desc:TS;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;================");
 
-local res = db:query("SELECT SQL_NO_CACHE id FROM t_sjk_paper_my_info_sphinxse WHERE query=\'"..keyword.."filter=b_delete,0;filter=type_id,6;filter=person_id,"..person_id..";"..str_subject_id.." maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
+local res = db:query("SELECT SQL_NO_CACHE id FROM t_sjk_paper_my_info_sphinxse WHERE query=\'"..keyword.."filter=b_delete,0;filter=type_id,"..type_id..";filter=person_id,"..person_id..";"..str_stage_id..str_subject_id.."sort=attr_desc:TS;maxmatches="..str_maxmatches..";offset="..offset..";limit="..limit.."\';SHOW ENGINE SPHINX  STATUS;")
 
 --去第二个结果集中的Status中截取总个数
 local res1 = db:read_result()
@@ -119,8 +135,8 @@ local myPrime = require "resty.PRIME";
 
 local paper_info = ""
 for i=1,#res do
-    local str = "{\"iid\":\""..res[i]["id"].."\",\"paper_id\":\"##\",\"paper_name\":\"##\",\"ti_num\":\"##\",\"create_time\":\"##\",\"paper_source\":\"##\",\"preview_status\":\"##\",\"extenstion\":\"##\",\"file_id\":\"##\",\"page\":\"##\",\"parent_structure_name\":\"##\",\"paper_id_char\":\"##\",\"paper_id_int\":\"##\",\"table_pk\":\"##\",\"group_id\":\"##\",\"person_id\":\"##\",\"identity_id\":\"##\",\"owner_id\":\"##\",\"type_id\":\"##\",\"for_urlencoder_url\":\"##\",\"for_iso_url\":\"##\",\"structure_id_int\":\"##\",\"scheme_id_int\":\"##\",\"paper_app_type\":\"##\",\"paper_app_type_name\":\"##\",\"url_code\":\"##\",\"person_name\":\"##\",\"org_name\":\"##\",\"subject_id\":\"##\",\"stage_subject\":\"##\"}"
-	
+    local str = "{\"iid\":\""..res[i]["id"].."\",\"paper_id\":\"##\",\"paper_name\":\"##\",\"ti_num\":\"##\",\"create_time\":\"##\",\"paper_source\":\"##\",\"preview_status\":\"##\",\"extenstion\":\"##\",\"file_id\":\"##\",\"page\":\"##\",\"parent_structure_name\":\"##\",\"paper_id_char\":\"##\",\"paper_id_int\":\"##\",\"table_pk\":\"##\",\"group_id\":\"##\",\"person_id\":\"##\",\"identity_id\":\"##\",\"owner_id\":\"##\",\"type_id\":\"##\",\"for_urlencoder_url\":\"##\",\"for_iso_url\":\"##\",\"structure_id_int\":\"##\",\"scheme_id_int\":\"##\",\"paper_app_type\":\"##\",\"paper_app_type_name\":\"##\",\"subject_id\":\"##\",\"url_code\":\"##\",\"person_name\":\"##\",\"org_name\":\"##\",\"stage_subject\":\"##\"}"
+   -- ngx.log(ngx.ERR,"-----------------".."mypaper_"..res[i]["id"])	
     local paper_value = cache:hmget("mypaper_"..res[i]["id"],"paper_id_char","paper_name","question_count","create_time","paper_type","preview_status","extension","file_id","paper_page","structure_id","paper_id_char","paper_id_int","table_pk","group_id","person_id","identity_id","owner_id","type_id","for_urlencoder_url","for_iso_url","identity_id","identity_id","paper_app_type","paper_app_type_name","subject_id")
 
 
@@ -146,7 +162,6 @@ for i=1,#res do
     end
     curr_path = string.sub(curr_path,0,#curr_path-2)
     paper_value[10] = curr_path
-
 
     if paper_value[1]~=ngx.null then
         for j=1,#paper_value do
@@ -176,7 +191,6 @@ for i=1,#res do
 		local subject_id = paper_value[25];
 		--获得学段科目
 		local subject_info = ssdb_db:multi_hget("subject_"..subject_id,"stage_subject");
-		str = string.gsub(str,"##",subject_id,1)
 		str = string.gsub(str,"##",subject_info[2],1)	
 
         paper_info = paper_info..str..","

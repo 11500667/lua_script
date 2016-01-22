@@ -79,9 +79,9 @@ local function getByBaseIdAndGroupId(self, paperIdInt, groupId)
     end;
     local infoId = queryResult[1]["ID"];
 
-    local paperCache = cacheUtil:hmget("paper_" .. infoId, "");
+    local paperCache = cacheUtil:hmget("paper_" .. infoId, "paper_id_int", "paper_id_char", "paper_name", "paper_type");
 
-    if paperCache ~= nil then
+    if paperCache ~= nil and paperCache ~= ngx.null then
         paperCache["id"] = infoId;
     end
     return paperCache;

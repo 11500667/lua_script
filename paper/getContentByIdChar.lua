@@ -1,25 +1,8 @@
-#ngx.header.content_type = "text/plain;charset=utf-8"
---[[
-#������ 2015-01-28
-#��������ݲ���paper_id_char��ȡJson_content�⣬���ж��������⻹�ǿ͹���
-]]
-local request_method = ngx.var.request_method
-local args = nil
-if "GET" == request_method then
-    args = ngx.req.get_uri_args()
-else
-    ngx.req.read_body()
-    args = ngx.req.get_post_args()
-end
-
-
---��ȡ����paper_id_char�����жϲ����Ƿ���ȷ
-if args["paper_id_char"] == nil or args["paper_id_char"] == "" then
-    ngx.say("{\"success\":false,\"info\":\"paper_id_char�������\"}")
+local paper_id_char = getParamByName("paper_id_char");
+if paper_id_char == nil or paper_id_char == "" then
+    ngx.say("{\"success\":false,\"info\":\"paper_id_char不能为空\"}")
     return
 end
-
-local paper_id_char = args["paper_id_char"];
 
 
 local cjson = require "cjson";
@@ -39,6 +22,9 @@ local cacheUtil = require "common.CacheUtil";
 local function getOptionCountByInfoId(infoId)
     --ngx.log(ngx.ERR, "######### [infoId] - > ", infoId);
     local jsonQuesBase64 = cache: hget("question_" .. infoId, "json_question");
+    if string.isBlank(jsonQuesBase64) then
+        return 0; 
+    end
     local jsonQuesStr    = ngx.decode_base64(jsonQuesBase64);
     local jsonQuesObj    = cjson.decode(jsonQuesStr);
     --ngx.log(ngx.ERR,"#########2"..jsonQuesObj.option_count.."########");
@@ -89,7 +75,7 @@ else
     for index, question in ipairs(quesList) do
         local infoId = question["id"];
         local fileId = question["t_id"];
-        local qtId   = question["qt_id"];
+        local qtId   = tonumber(question["qt_id"]);
         local kgZg   = kgZgHash[qtId];
         local optionCount = getOptionCountByInfoId(infoId);
 

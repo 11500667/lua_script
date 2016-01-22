@@ -74,25 +74,7 @@ if partition_id and len(partition_id) > 0 then
 	end
 
 	--update ssdb
-	--ssdb:hset("social_bbs_partition_"..partition_id, "name", name)
-
-	--insert ssdb
-	local partition = {}
-	partition.id = partition_id
-	partition.bbs_id = bbs_id
-	partition.name = name
-	partition.sequence = sequence
-	partition.b_delete = 0
-	ssdb:multi_hset("social_bbs_partition_"..partition_id, partition)
-
-	local pids_t, err = ssdb:hget("social_bbs_include_partition", "bbs_id_"..bbs_id)
-	local pids = ""
-	if pids_t and pids_t[1] and len(pids_t[1]) > 0 and pids_t[1] ~= "not_found" then
-		pids = pids_t[1]..","..partition_id
-	else
-		pids = partition_id
-	end
-	ssdb:hset("social_bbs_include_partition", "bbs_id_"..bbs_id, pids)
+	ssdb:hset("social_bbs_partition_"..partition_id, "name", name)
 else
 	--insert mysql
 	partition_id = ssdb:incr("social_bbs_partition_pk")[1]
@@ -116,7 +98,7 @@ else
 
 	local pids_t, err = ssdb:hget("social_bbs_include_partition", "bbs_id_"..bbs_id)
 	local pids = ""
-	if pids_t and pids_t[1] and len(pids_t[1]) > 0 and pids_t[1] ~= "not_found" then
+	if pids_t and len(pids_t[1]) > 0 then
 		pids = pids_t[1]..","..partition_id
 	else
 		pids = partition_id

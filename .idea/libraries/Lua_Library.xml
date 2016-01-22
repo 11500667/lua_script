@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Lua Library" type="Lua">
-    <CLASSES />
-    <JAVADOC />
-    <SOURCES>
-      <root url="file://D:/lua-5.3.1/src" />
-    </SOURCES>
-  </library>
-</component>
